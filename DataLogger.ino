@@ -1,13 +1,13 @@
 #include <Wire.h>
 #include <Adafruit_INA219.h>
 #include <Adafruit_SSD1306.h>
-#include <SPI.h>
-#include "SdFat.h"
+//#include <SPI.h>
+//#include "SdFat.h"
 
 //declare breakout variables
-SdFat SD;
+//SdFat SD;
+//const int chipSelect = 10;
 #define OLED_RESET 4
-const int chipSelect = 10;
 Adafruit_SSD1306 display(OLED_RESET);
 Adafruit_INA219 ina219;
 
@@ -24,17 +24,18 @@ float power_mW = 0;
 float energy_mWh = 0;
 
 //declare microSD variables
-File TimeFile;
+/*File TimeFile;
 File VoltFile;
 File CurFile;
-
+*/
 /******************************************************************************/
 /*  I : /                                                                     */
 /*  P : setup procedure                                                       */
 /*  O : /                                                                     */
 /******************************************************************************/
 void setup() {
-  SD.begin(chipSelect);
+  Serial.begin(115200);
+//  SD.begin(chipSelect);
   display.begin(SSD1306_SWITCHCAPVCC, 0x3C);
   ina219.begin();
 }
@@ -54,7 +55,7 @@ void loop() {
     
     //get the values from the INA219
     ina219values();
-
+/*
     //write the data at the end of TIME.txt
     TimeFile = SD.open("TIME.txt", FILE_WRITE);
     if (TimeFile) {
@@ -75,9 +76,10 @@ void loop() {
       CurFile.println(current_mA);
       CurFile.close();
     }
-
+*/
     //display the data on the SSD1306 display
     displaydata();
+    serialData();
   }
 }
 
@@ -148,6 +150,6 @@ void serialData() {
   Serial.print("Load Voltage:  "); Serial.print(loadvoltage); Serial.println(" V");
   Serial.print("Current:       "); Serial.print(current_mA); Serial.println(" mA");
   Serial.print("Power:         "); Serial.print(power_mW); Serial.println(" mW");
-  Serial.print("Energy:         "); Serial.print(energy_mWh); Serial.println(" mWh");
+  Serial.print("Energy:        "); Serial.print(energy_mWh); Serial.println(" mWh");
   Serial.println("");
 }

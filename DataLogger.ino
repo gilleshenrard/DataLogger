@@ -16,12 +16,12 @@ unsigned long previousMillis = 0;
 unsigned long interval = 100;
 
 //declare INA219 variables
-float shuntvoltage = 0;
-float busvoltage = 0;
-float current_mA = 0;
-float loadvoltage = 0;
-float power_mW = 0;
-float energy_mWh = 0;
+volatile float shuntvoltage = 0;
+volatile float busvoltage = 0;
+volatile float current_mA = 0;
+volatile float loadvoltage = 0;
+volatile float power_mW = 0;
+volatile float energy_mWh = 0;
 
 //declare microSD variables
 /*File TimeFile;
@@ -38,6 +38,21 @@ void setup() {
 //  SD.begin(chipSelect);
   display.begin(SSD1306_SWITCHCAPVCC, 0x3C);
   ina219.begin();
+
+  // TIMER 1 for interrupt frequency 1 Hz:
+  cli(); // stop interrupts
+  TCCR1A = 0; // set entire TCCR1A register to 0
+  TCCR1B = 0; // same for TCCR1B
+  TCNT1  = 0; // initialize counter value to 0
+  // set compare match register for 1 Hz increments
+  OCR1A = 12499; // = 8000000 / (256 * 1) - 1 (must be <65536)
+  // turn on CTC mode
+  TCCR1B |= (1 << WGM12);
+  // Set CS12, CS11 and CS10 bits for 256 prescaler
+  TCCR1B |= (1 << CS12) | (0 << CS11) | (0 << CS10);
+  // enable timer compare interrupt
+  TIMSK1 |= (1 << OCIE1A);
+  sei(); // allow interrupts
 }
 
 /******************************************************************************/
@@ -81,6 +96,14 @@ void loop() {
     displaydata();
     serialData();
   }
+}
+
+/****************************************************************************/
+/*  I : timer1 comparator vector                                            */
+/*  P : get data from INA219 and send it to the display (10Hz freq.)        */
+/*  O : /                                                                   */
+/****************************************************************************/
+ISR(TIMER1_COMPA_vect){
 }
 
 /******************************************************************************/

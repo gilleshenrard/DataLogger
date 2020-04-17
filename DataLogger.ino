@@ -21,7 +21,7 @@ float busvoltage = 0;
 float current_mA = 0;
 float loadvoltage = 0;
 float power_mW = 0;
-float energy = 0;
+float energy_mWh = 0;
 
 //declare microSD variables
 File TimeFile;
@@ -110,7 +110,7 @@ void displaydata() {
 
   //write the third line (x.xx mWh)
   display.setCursor(0, 20);
-  display.println(energy);
+  display.println(energy_mWh);
   display.setCursor(65, 20);
   display.println("mWh");
 
@@ -134,5 +134,20 @@ void ina219values() {
   loadvoltage = busvoltage + (shuntvoltage / 1000);
   
   //compute the energy consumed
-  energy += power_mW / 3600;
+  energy_mWh += power_mW / 3600;
+}
+
+/******************************************************************************/
+/*  I : /                                                                     */
+/*  P : print all values through the serial monitor                           */
+/*  O : /                                                                     */
+/******************************************************************************/
+void serialData() {
+  Serial.print("Bus Voltage:   "); Serial.print(busvoltage); Serial.println(" V");
+  Serial.print("Shunt Voltage: "); Serial.print(shuntvoltage); Serial.println(" mV");
+  Serial.print("Load Voltage:  "); Serial.print(loadvoltage); Serial.println(" V");
+  Serial.print("Current:       "); Serial.print(current_mA); Serial.println(" mA");
+  Serial.print("Power:         "); Serial.print(power_mW); Serial.println(" mW");
+  Serial.print("Energy:         "); Serial.print(energy_mWh); Serial.println(" mWh");
+  Serial.println("");
 }

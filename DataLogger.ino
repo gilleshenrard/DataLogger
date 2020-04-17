@@ -67,9 +67,6 @@ void loop() {
   {
     //update timestamp
     previousMillis = currentMillis;
-    
-    //get the values from the INA219
-    ina219values();
 /*
     //write the data at the end of TIME.txt
     TimeFile = SD.open("TIME.txt", FILE_WRITE);
@@ -104,6 +101,11 @@ void loop() {
 /*  O : /                                                                   */
 /****************************************************************************/
 ISR(TIMER1_COMPA_vect){
+
+  //QUICK AND DIRTY ! FIND ANOTHER WAY
+  sei();
+  ina219values();
+  cli();
 }
 
 /******************************************************************************/

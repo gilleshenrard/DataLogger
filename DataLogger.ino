@@ -20,6 +20,7 @@ float shuntvoltage = 0;
 float busvoltage = 0;
 float current_mA = 0;
 float loadvoltage = 0;
+float power_mW = 0;
 float energy = 0;
 
 //declare microSD variables
@@ -103,7 +104,7 @@ void displaydata() {
 
   //write the second line (xxx.xx mW)
   display.setCursor(0, 10);
-  display.println(loadvoltage * current_mA);
+  display.println(power_mW);
   display.setCursor(65, 10);
   display.println("mW");
 
@@ -127,10 +128,11 @@ void ina219values() {
   shuntvoltage = ina219.getShuntVoltage_mV();
   busvoltage = ina219.getBusVoltage_V();
   current_mA = ina219.getCurrent_mA();
+  power_mW = ina219.getPower_mW();
 
   //compute the load voltage
   loadvoltage = busvoltage + (shuntvoltage / 1000);
   
   //compute the energy consumed
-  energy = energy + loadvoltage * current_mA / 3600;
+  energy += power_mW / 3600;
 }

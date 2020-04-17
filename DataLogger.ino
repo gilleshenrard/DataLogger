@@ -168,11 +168,32 @@ void ina219values() {
 /*  O : /                                                                     */
 /******************************************************************************/
 void serialData() {
-  Serial.print("Bus Voltage:   "); Serial.print(busvoltage); Serial.println(" V");
-  Serial.print("Shunt Voltage: "); Serial.print(shuntvoltage); Serial.println(" mV");
-  Serial.print("Load Voltage:  "); Serial.print(loadvoltage); Serial.println(" V");
-  Serial.print("Current:       "); Serial.print(current_mA); Serial.println(" mA");
-  Serial.print("Power:         "); Serial.print(power_mW); Serial.println(" mW");
-  Serial.print("Energy:        "); Serial.print(energy_mWh); Serial.println(" mWh");
+  char buffer[16]={0};
+  char floatbuf[8]={0};
+
+  dtostrf(busvoltage, 6, 3, floatbuf);
+  sprintf(buffer, "Vbus: %s V", floatbuf);
+  Serial.println(buffer);
+
+  dtostrf(shuntvoltage, 6, 3, floatbuf);
+  sprintf(buffer, "Vsh : %s mV", floatbuf);
+  Serial.println(buffer);
+
+  dtostrf(loadvoltage, 6, 3, floatbuf);
+  sprintf(buffer, "Vlo : %s V", floatbuf);
+  Serial.println(buffer);
+
+  dtostrf(current_mA, 6, 3, floatbuf);
+  sprintf(buffer, "I   : %s A", floatbuf);
+  Serial.println(buffer);
+
+  dtostrf(power_mW, 6, 3, floatbuf);
+  sprintf(buffer, "P   : %s mW", floatbuf);
+  Serial.println(buffer);
+
+  dtostrf(energy_mWh, 6, 3, floatbuf);
+  sprintf(buffer, "E   : %s mWh", floatbuf);
+  Serial.println(buffer);
+
   Serial.println("");
 }

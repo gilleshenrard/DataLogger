@@ -8,7 +8,7 @@
 //SdFat SD;
 //const int chipSelect = 10;
 #define OLED_RESET 4
-Adafruit_SSD1306 display(OLED_RESET);
+Adafruit_SSD1306 display(128, 64, &Wire, OLED_RESET);
 Adafruit_INA219 ina219;
 
 //declare time variables
@@ -108,7 +108,7 @@ ISR(TIMER1_COMPA_vect){
 
 /******************************************************************************/
 /*  I : /                                                                     */
-/*  P : send the data to be displayed by the SSD1306 (takes 350ms)            */
+/*  P : send the data to be displayed by the SSD1306 (takes 75ms)             */
 /*  O : /                                                                     */
 /******************************************************************************/
 void displaydata() {
@@ -141,13 +141,13 @@ void displaydata() {
   display.setCursor(0, 20);
   display.println(buffer);
   
-  //refresh the screen (takes 320 ms)
+  //refresh the screen
   display.display();
 }
 
 /******************************************************************************/
 /*  I : /                                                                     */
-/*  P : get the values from the INA219 via I²C                                */
+/*  P : get the values from the INA219 via I²C (takes 7ms)                    */
 /*  O : /                                                                     */
 /******************************************************************************/
 void ina219values() {

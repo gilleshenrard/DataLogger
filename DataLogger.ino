@@ -8,8 +8,9 @@
 Adafruit_SSD1306 display(128, 64, &Wire, OLED_RESET);
 Adafruit_INA219 ina219;
 
-//declare timer trigger flag
+//declare timer trigger flag and counter value
 volatile boolean triggered = false;
+volatile unsigned long elapsed = 0;
 
 //declare INA219 variables
 float shuntvoltage = 0;
@@ -39,7 +40,7 @@ void setup() {
   TCCR1A = 0; // set entire TCCR1A register to 0
   TCCR1B = 0; // same for TCCR1B
   TCNT1  = 0; // initialize counter value to 0
-  // set compare match register for 1 Hz increments
+  // set compare match register for 10 Hz increments
   OCR1A = 12499; // = 8000000 / (256 * 1) - 1 (must be <65536)
   // turn on CTC mode
   TCCR1B |= (1 << WGM12);
@@ -62,15 +63,15 @@ void loop() {
     //get the values measured by the INA219
     ina219values();
 
-    //write the data at the end of TIME.txt
-    measurFile = SD.open("MEASURES.csv", FILE_WRITE);
+    //write the data at the end of MEAS.csv
+    measurFile = SD.open("MEAS.csv", FILE_WRITE);
     if (measurFile) {
       char buf[32], voltbuf[8]={0}, curbuf[8]={0};
       dtostrf(loadvoltage, 6, 3, voltbuf);
       dtostrf(current_mA, 6, 3, curbuf);
       
       //format a csv line : time,voltage,current
-      sprintf(buf, "%ld,%s,%s", millis(), voltbuf, curbuf);
+      sprintf(buf, "%ld,%s,%s", elapsed, voltbuf, curbuf);
 
       //write the line in the file
       measurFile.println(buf);
@@ -87,11 +88,12 @@ void loop() {
 
 /****************************************************************************/
 /*  I : timer1 comparator vector                                            */
-/*  P : set the flag stating that a 100ms timer has been reached            */
+/*  P : set the flag indicating timer has been reached + increment time var.*/
 /*  O : /                                                                   */
 /****************************************************************************/
 ISR(TIMER1_COMPA_vect){
   triggered = true;
+  elapsed += 100;
 }
 
 /******************************************************************************/

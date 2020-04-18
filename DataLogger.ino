@@ -1,4 +1,3 @@
-#include <Wire.h>
 #include <Adafruit_INA219.h>
 #include <Adafruit_SSD1306.h>
 #include <SdFat.h>
@@ -64,19 +63,7 @@ void loop() {
     ina219values();
 
     //write the data at the end of MEAS.csv
-    measurFile = SD.open("MEAS.csv", FILE_WRITE);
-    if (measurFile) {
-      char buf[32], voltbuf[8]={0}, curbuf[8]={0};
-      dtostrf(loadvoltage, 6, 3, voltbuf);
-      dtostrf(current_mA, 6, 3, curbuf);
-      
-      //format a csv line : time,voltage,current
-      sprintf(buf, "%ld,%s,%s", elapsed, voltbuf, curbuf);
-
-      //write the line in the file
-      measurFile.println(buf);
-      measurFile.close();
-    }
+    writeFile();
       
     //display the data on the SSD1306 display
     displaydata();
@@ -160,6 +147,29 @@ void ina219values() {
 
   //turn the INA219 off
   ina219.powerSave(true);
+}
+
+/******************************************************************************/
+/*  I : /                                                                     */
+/*  P : Append the measurments in a CSV file                                  */
+/*  O : /                                                                     */
+/******************************************************************************/
+void writeFile() {
+  measurFile = SD.open("MEAS.csv", FILE_WRITE);
+  if (measurFile) {
+    char buf[32], voltbuf[8]={0}, curbuf[8]={0};
+
+    //prepare buffers with the voltage and current values in strings
+    dtostrf(loadvoltage, 6, 3, voltbuf);
+    dtostrf(current_mA, 6, 3, curbuf);
+    
+    //format a csv line : time,voltage,current
+    sprintf(buf, "%ld,%s,%s", elapsed, voltbuf, curbuf);
+
+    //write the line in the file
+    measurFile.println(buf);
+    measurFile.close();
+  }
 }
 
 /******************************************************************************/

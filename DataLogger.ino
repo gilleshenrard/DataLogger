@@ -13,12 +13,12 @@ volatile boolean triggered = false;
 volatile unsigned long elapsed = 0;
 
 //declare INA219 variables
-float shuntvoltage = 0;
-float busvoltage = 0;
-float current_mA = 0;
-float loadvoltage = 0;
-float power_mW = 0;
-float energy_mWh = 0;
+float shuntvoltage = 0.0;
+float busvoltage = 0.0;
+float current_mA = 0.0;
+float loadvoltage = 0.0;
+float power_mW = 0.0;
+float energy_mWh = 0.0;
 
 //declare microSD variables
 SdFat SD;
@@ -148,10 +148,10 @@ void ina219values() {
   power_mW = ina219.getPower_mW();
 
   //compute the load voltage
-  loadvoltage = busvoltage + (shuntvoltage / 1000);
+  loadvoltage = busvoltage + (shuntvoltage / 1000.0);
   
   //compute the energy consumed (divider : 0.1s / 3600)
-  energy_mWh += power_mW / 36000;
+  energy_mWh += power_mW / 36000.0;
 }
 
 /******************************************************************************/

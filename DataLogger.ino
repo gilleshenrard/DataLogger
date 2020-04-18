@@ -2,18 +2,15 @@
 #include <Adafruit_INA219.h>
 #include <Adafruit_SSD1306.h>
 //#include <SPI.h>
-//#include "SdFat.h"
+//#include <SdFat.h>
 
 //declare breakout variables
-//SdFat SD;
-//const int chipSelect = 10;
 #define OLED_RESET 4
 Adafruit_SSD1306 display(128, 64, &Wire, OLED_RESET);
 Adafruit_INA219 ina219;
 
-//declare timer trigger flag and interval to hour divider
+//declare timer trigger flag
 volatile boolean triggered = false;
-#define MSTOH 36000
 
 //declare INA219 variables
 float shuntvoltage = 0;
@@ -23,8 +20,10 @@ float loadvoltage = 0;
 float power_mW = 0;
 float energy_mWh = 0;
 
-//declare microSD variables
-/*File TimeFile;
+//declare microSD variables*/
+SdFat SD;
+const int chipSelect = 10;
+File TimeFile;
 File VoltFile;
 File CurFile;
 */
@@ -61,10 +60,12 @@ void setup() {
 /*  O : /                                                                     */
 /******************************************************************************/
 void loop() {
+  //if timer has been reached
   if (triggered)
   {
     unsigned long currentMillis = millis();
 
+    //get the values measured by the INA219
     ina219values();
 /*
     //write the data at the end of TIME.txt
@@ -92,13 +93,14 @@ void loop() {
     displaydata();
     serialData();
 
+    //reset the flag
     triggered = false;
   }
 }
 
 /****************************************************************************/
 /*  I : timer1 comparator vector                                            */
-/*  P : get data from INA219 and send it to the display (10Hz freq.)        */
+/*  P : set the flag stating that a 100ms timer has been reached            */
 /*  O : /                                                                   */
 /****************************************************************************/
 ISR(TIMER1_COMPA_vect){
@@ -119,7 +121,7 @@ void displaydata() {
   display.setTextColor(WHITE);
   display.setTextSize(1);
 
-  //write the first line (x.xx V  xxx.xx A)
+  //write the first line (xxx.xxx V  xxx.xxx A)
   dtostrf(busvoltage, 6, 3, floatbuf);
   sprintf(buffer, "%s V  ", floatbuf);
   dtostrf(current_mA, 6, 3, floatbuf);
@@ -128,13 +130,13 @@ void displaydata() {
   display.setCursor(0, 0);
   display.println(buffer);
 
-  //write the second line (xxx.xx mW)
+  //write the second line (xxx.xxx mW)
   dtostrf(power_mW, 6, 3, floatbuf);
   sprintf(buffer, "%s mW", floatbuf);
   display.setCursor(0, 10);
   display.println(buffer);
 
-  //write the third line (x.xx mWh)
+  //write the third line (xxx.xxx mWh)
   dtostrf(energy_mWh, 6, 3, floatbuf);
   sprintf(buffer, "%s mWh", floatbuf);
   display.setCursor(0, 20);
@@ -150,7 +152,7 @@ void displaydata() {
 /*  O : /                                                                     */
 /******************************************************************************/
 void ina219values() {
-  //get the shunt voltage, bus voltage and current from the INA219
+  //get the shunt voltage, bus voltage, current and power consumed from the INA219
   shuntvoltage = ina219.getShuntVoltage_mV();
   busvoltage = ina219.getBusVoltage_V();
   current_mA = ina219.getCurrent_mA();
@@ -159,8 +161,8 @@ void ina219values() {
   //compute the load voltage
   loadvoltage = busvoltage + (shuntvoltage / 1000);
   
-  //compute the energy consumed
-  energy_mWh += power_mW / MSTOH;
+  //compute the energy consumed (divider : 0.1s / 3600)
+  energy_mWh += power_mW / 36000;
 }
 
 /******************************************************************************/

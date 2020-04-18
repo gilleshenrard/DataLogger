@@ -137,21 +137,29 @@ void displaydata() {
 
 /******************************************************************************/
 /*  I : /                                                                     */
-/*  P : get the values from the INA219 via I²C (takes 7ms)                    */
+/*  P : get the values from the INA219 via I²C (takes 11ms)                   */
 /*  O : /                                                                     */
 /******************************************************************************/
 void ina219values() {
+  //turn the INA219 on
+  ina219.powerSave(false);
+  
   //get the shunt voltage, bus voltage, current and power consumed from the INA219
   shuntvoltage = ina219.getShuntVoltage_mV();
   busvoltage = ina219.getBusVoltage_V();
   current_mA = ina219.getCurrent_mA();
-  power_mW = ina219.getPower_mW();
 
   //compute the load voltage
   loadvoltage = busvoltage + (shuntvoltage / 1000.0);
+
+  //compute the power consumed
+  power_mW = loadvoltage*current_mA;
   
   //compute the energy consumed (divider : 0.1s / 3600)
   energy_mWh += power_mW / 36000.0;
+
+  //turn the INA219 off
+  ina219.powerSave(true);
 }
 
 /******************************************************************************/

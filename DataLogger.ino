@@ -108,38 +108,40 @@ ISR(TIMER1_COMPA_vect){
 
 /******************************************************************************/
 /*  I : /                                                                     */
-/*  P : send the data to be displayed by the SSD1306                          */
+/*  P : send the data to be displayed by the SSD1306 (takes 350ms)            */
 /*  O : /                                                                     */
 /******************************************************************************/
 void displaydata() {
+  char buffer[32]={0};
+  char floatbuf[8]={0};
+
   //set up the display (clear, then white colour and size 1)
   display.clearDisplay();
   display.setTextColor(WHITE);
   display.setTextSize(1);
 
   //write the first line (x.xx V  xxx.xx A)
+  dtostrf(busvoltage, 6, 3, floatbuf);
+  sprintf(buffer, "%s V  ", floatbuf);
+  dtostrf(current_mA, 6, 3, floatbuf);
+  strcat(buffer, floatbuf);
+  strcat(buffer, " mA");
   display.setCursor(0, 0);
-  display.println(loadvoltage);
-  display.setCursor(35, 0);
-  display.println("V");
-  display.setCursor(50, 0);
-  display.println(current_mA);
-  display.setCursor(95, 0);
-  display.println("mA");
+  display.println(buffer);
 
   //write the second line (xxx.xx mW)
+  dtostrf(power_mW, 6, 3, floatbuf);
+  sprintf(buffer, "%s mW", floatbuf);
   display.setCursor(0, 10);
-  display.println(power_mW);
-  display.setCursor(65, 10);
-  display.println("mW");
+  display.println(buffer);
 
   //write the third line (x.xx mWh)
+  dtostrf(energy_mWh, 6, 3, floatbuf);
+  sprintf(buffer, "%s mWh", floatbuf);
   display.setCursor(0, 20);
-  display.println(energy_mWh);
-  display.setCursor(65, 20);
-  display.println("mWh");
-
-  //refresh the screen
+  display.println(buffer);
+  
+  //refresh the screen (takes 320 ms)
   display.display();
 }
 

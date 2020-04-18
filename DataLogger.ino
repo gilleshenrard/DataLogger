@@ -11,9 +11,8 @@
 Adafruit_SSD1306 display(128, 64, &Wire, OLED_RESET);
 Adafruit_INA219 ina219;
 
-//declare time variables
-unsigned long previousMillis = 0;
-unsigned long interval = 100;
+//declare timer trigger flag
+volatile boolean triggered = false;
 
 //declare INA219 variables
 float shuntvoltage = 0;
@@ -61,12 +60,9 @@ void setup() {
 /*  O : /                                                                     */
 /******************************************************************************/
 void loop() {
-  //every 100 ms
-  unsigned long currentMillis = millis();
-  if (currentMillis - previousMillis >= interval)
+  if (triggered)
   {
-    //update timestamp
-    previousMillis = currentMillis;
+    unsigned long currentMillis = millis();
 
     ina219values();
 /*
@@ -90,10 +86,12 @@ void loop() {
       CurFile.println(current_mA);
       CurFile.close();
     }
-*/
+*/  
     //display the data on the SSD1306 display
     displaydata();
     serialData();
+
+    triggered = false;
   }
 }
 
@@ -103,7 +101,7 @@ void loop() {
 /*  O : /                                                                   */
 /****************************************************************************/
 ISR(TIMER1_COMPA_vect){
-
+  triggered = true;
 }
 
 /******************************************************************************/

@@ -16,12 +16,12 @@ unsigned long previousMillis = 0;
 unsigned long interval = 100;
 
 //declare INA219 variables
-volatile float shuntvoltage = 0;
-volatile float busvoltage = 0;
-volatile float current_mA = 0;
-volatile float loadvoltage = 0;
-volatile float power_mW = 0;
-volatile float energy_mWh = 0;
+float shuntvoltage = 0;
+float busvoltage = 0;
+float current_mA = 0;
+float loadvoltage = 0;
+float power_mW = 0;
+float energy_mWh = 0;
 
 //declare microSD variables
 /*File TimeFile;
@@ -67,6 +67,8 @@ void loop() {
   {
     //update timestamp
     previousMillis = currentMillis;
+
+    ina219values();
 /*
     //write the data at the end of TIME.txt
     TimeFile = SD.open("TIME.txt", FILE_WRITE);
@@ -102,10 +104,6 @@ void loop() {
 /****************************************************************************/
 ISR(TIMER1_COMPA_vect){
 
-  //QUICK AND DIRTY ! FIND ANOTHER WAY
-  sei();
-  ina219values();
-  cli();
 }
 
 /******************************************************************************/

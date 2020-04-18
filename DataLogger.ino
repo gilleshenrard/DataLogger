@@ -1,8 +1,7 @@
 #include <Wire.h>
 #include <Adafruit_INA219.h>
 #include <Adafruit_SSD1306.h>
-//#include <SPI.h>
-//#include <SdFat.h>
+#include <SdFat.h>
 
 //declare breakout variables
 #define OLED_RESET 4
@@ -20,21 +19,18 @@ float loadvoltage = 0;
 float power_mW = 0;
 float energy_mWh = 0;
 
-//declare microSD variables*/
+//declare microSD variables
 SdFat SD;
 const int chipSelect = 10;
-File TimeFile;
-File VoltFile;
-File CurFile;
-*/
+File measurFile;
+
 /******************************************************************************/
 /*  I : /                                                                     */
 /*  P : setup procedure                                                       */
 /*  O : /                                                                     */
 /******************************************************************************/
 void setup() {
-  Serial.begin(115200);
-//  SD.begin(chipSelect);
+  SD.begin(chipSelect);
   display.begin(SSD1306_SWITCHCAPVCC, 0x3C);
   ina219.begin();
 
@@ -63,35 +59,26 @@ void loop() {
   //if timer has been reached
   if (triggered)
   {
-    unsigned long currentMillis = millis();
-
     //get the values measured by the INA219
     ina219values();
-/*
+
     //write the data at the end of TIME.txt
-    TimeFile = SD.open("TIME.txt", FILE_WRITE);
-    if (TimeFile) {
-      TimeFile.println(currentMillis);
-      TimeFile.close();
-    }
+    measurFile = SD.open("MEASURES.csv", FILE_WRITE);
+    if (measurFile) {
+      char buf[32], voltbuf[8]={0}, curbuf[8]={0};
+      dtostrf(loadvoltage, 6, 3, voltbuf);
+      dtostrf(current_mA, 6, 3, curbuf);
+      
+      //format a csv line : time,voltage,current
+      sprintf(buf, "%ld,%s,%s", millis(), voltbuf, curbuf);
 
-    //write the data at the end of VOLT.txt
-    VoltFile = SD.open("VOLT.txt", FILE_WRITE);
-    if (VoltFile) {
-      VoltFile.println(loadvoltage);
-      VoltFile.close();
+      //write the line in the file
+      measurFile.println(buf);
+      measurFile.close();
     }
-
-    //write the data at the end of CUR.txt
-    CurFile = SD.open("CUR.txt", FILE_WRITE);
-    if (CurFile) {
-      CurFile.println(current_mA);
-      CurFile.close();
-    }
-*/  
+      
     //display the data on the SSD1306 display
     displaydata();
-    serialData();
 
     //reset the flag
     triggered = false;

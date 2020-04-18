@@ -1,6 +1,6 @@
 #include <Adafruit_INA219.h>
 #include <Adafruit_SSD1306.h>
-#include <SdFat.h>
+#include <SD.h>
 
 //declare timer trigger flag and counter value
 volatile boolean triggered = false;
@@ -20,9 +20,7 @@ float power_mW = 0.0;
 float energy_mWh = 0.0;
 
 //declare microSD variables
-SdFat SD;
 const int chipSelect = 10;
-File measurFile;
 
 /******************************************************************************/
 /*  I : /                                                                     */
@@ -165,7 +163,7 @@ void ina219values() {
 /*  O : /                                                                     */
 /******************************************************************************/
 void writeFile() {
-  measurFile = SD.open("MEAS.csv", FILE_WRITE);
+  File measurFile = SD.open(F("MEAS.csv"), FILE_WRITE);
   if (measurFile) {
     char buf[32], voltbuf[8]={0}, curbuf[8]={0};
 

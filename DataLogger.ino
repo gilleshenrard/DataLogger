@@ -2,16 +2,16 @@
 #include <Adafruit_SSD1306.h>
 #include <SdFat.h>
 
-//declare breakout variables
-#define OLED_RESET 4
-Adafruit_SSD1306 display(128, 64, &Wire, OLED_RESET);
-Adafruit_INA219 ina219;
-
 //declare timer trigger flag and counter value
 volatile boolean triggered = false;
 volatile unsigned long elapsed = 0;
 
+//declare SSD1306 OLED display variables
+#define OLED_RESET 4
+Adafruit_SSD1306 display(128, 64, &Wire, OLED_RESET);
+
 //declare INA219 variables
+Adafruit_INA219 ina219;
 float shuntvoltage = 0.0;
 float busvoltage = 0.0;
 float current_mA = 0.0;
@@ -34,20 +34,30 @@ void setup() {
   display.begin(SSD1306_SWITCHCAPVCC, 0x3C);
   ina219.begin();
 
+  // stop interrupts
+  cli();
+
   // TIMER 1 for interrupt frequency 1 Hz:
-  cli(); // stop interrupts
-  TCCR1A = 0; // set entire TCCR1A register to 0
-  TCCR1B = 0; // same for TCCR1B
-  TCNT1  = 0; // initialize counter value to 0
+
+  //initialise the CCR register and the counter
+  TCCR1A = 0;
+  TCCR1B = 0;
+  TCNT1  = 0;
+  
   // set compare match register for 10 Hz increments
   OCR1A = 12499; // = 8000000 / (256 * 1) - 1 (must be <65536)
+  
   // turn on CTC mode
   TCCR1B |= (1 << WGM12);
+  
   // Set CS12, CS11 and CS10 bits for 256 prescaler
   TCCR1B |= (1 << CS12) | (0 << CS11) | (0 << CS10);
+  
   // enable timer compare interrupt
   TIMSK1 |= (1 << OCIE1A);
-  sei(); // allow interrupts
+
+  // allow interrupts
+  sei();
 }
 
 /******************************************************************************/

@@ -184,7 +184,7 @@ void serialData() {
   Serial.println(buffer);
 
   dtostrf(current_mA, 6, 3, floatbuf);
-  sprintf(buffer, "I   : %s A", floatbuf);
+  sprintf(buffer, "I   : %s mA", floatbuf);
   Serial.println(buffer);
 
   dtostrf(power_mW, 6, 3, floatbuf);

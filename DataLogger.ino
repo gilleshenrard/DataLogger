@@ -136,6 +136,9 @@ void ina219values() {
   busvoltage = ina219.getBusVoltage_V();
   current_mA = ina219.getCurrent_mA();
 
+  //turn the INA219 off
+  ina219.powerSave(true);
+
   //compute the load voltage
   loadvoltage = busvoltage + (shuntvoltage / 1000.0);
 
@@ -144,9 +147,6 @@ void ina219values() {
   
   //compute the energy consumed (t = 0.1s / 3600)
   energy_mWh += power_mW / 36000.0;
-
-  //turn the INA219 off
-  ina219.powerSave(true);
 }
 
 /******************************************************************************/

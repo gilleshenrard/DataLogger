@@ -11,8 +11,9 @@
 Adafruit_SSD1306 display(128, 64, &Wire, OLED_RESET);
 Adafruit_INA219 ina219;
 
-//declare timer trigger flag
+//declare timer trigger flag and interval to hour divider
 volatile boolean triggered = false;
+#define MSTOH 36000
 
 //declare INA219 variables
 float shuntvoltage = 0;
@@ -159,7 +160,7 @@ void ina219values() {
   loadvoltage = busvoltage + (shuntvoltage / 1000);
   
   //compute the energy consumed
-  energy_mWh += power_mW / 3600;
+  energy_mWh += power_mW / MSTOH;
 }
 
 /******************************************************************************/

@@ -1,6 +1,6 @@
 #include <Adafruit_INA219.h>
 #include <Adafruit_SSD1306.h>
-#include <SD.h>
+#include <SdFat.h>
 
 //declare timer trigger flag and counter value
 volatile boolean triggered = false;
@@ -21,6 +21,8 @@ float energy_mWh = 0.0;
 
 //declare microSD variables
 const int chipSelect = 10;
+SdFat sd;
+SdFile measurFile;
 
 /******************************************************************************/
 /*  I : /                                                                     */
@@ -28,7 +30,7 @@ const int chipSelect = 10;
 /*  O : /                                                                     */
 /******************************************************************************/
 void setup() {
-  SD.begin(chipSelect);
+  sd.begin(chipSelect);
   display.begin(SSD1306_SWITCHCAPVCC, 0x3C);
   ina219.begin();
 
@@ -163,8 +165,7 @@ void ina219values() {
 /*  O : /                                                                     */
 /******************************************************************************/
 void writeFile() {
-  File measurFile = SD.open(F("MEAS.csv"), FILE_WRITE);
-  if (measurFile) {
+  if(measurFile.open("MEAS.csv", O_WRITE | O_CREAT | O_APPEND)) {
     char buf[32], voltbuf[8]={0}, curbuf[8]={0};
 
     //prepare buffers with the voltage and current values in strings
@@ -172,10 +173,10 @@ void writeFile() {
     dtostrf(current_mA, 6, 3, curbuf);
     
     //format a csv line : time,voltage,current
-    sprintf(buf, "%ld,%s,%s", elapsed, voltbuf, curbuf);
+    sprintf(buf, "%ld,%s,%s\n", elapsed, voltbuf, curbuf);
 
     //write the line in the file
-    measurFile.println(buf);
+    measurFile.write(buf);
     measurFile.close();
   }
 }

@@ -23,6 +23,7 @@ float energy_mWh = 0.0;
 const int chipSelect = 10;
 SdFat sd;
 SdFile measurFile;
+SdFile timeFile;
 
 /******************************************************************************/
 /*  I : /                                                                     */
@@ -73,10 +74,16 @@ void loop() {
     ina219values();
 
     //write the data at the end of MEAS.csv
+    unsigned long timed = millis();
     writeFile();
+    timed = millis() - timed;
+    if(timeFile.open("TIME.txt", O_WRITE | O_CREAT | O_APPEND)){
+      timeFile.println(timed);
+      timeFile.close();
+    }
       
     //display the data on the SSD1306 display
-    displaydata();
+    //displaydata();
 
     //reset the flag
     triggered = false;
@@ -163,6 +170,15 @@ void ina219values() {
 /*  I : /                                                                     */
 /*  P : Append the measurments in a CSV file                                  */
 /*  O : /                                                                     */
+/******************************************************************************/
+/******************************************************************************/
+/*  Timing tests : wrote timings in a separate file (1234 iterations),        */
+/*                   removed occasional hiccups (time > 130 ms)               */
+/*                 min : 14ms                                                 */
+/*                 max : 47ms                                                 */
+/*                 average : 18.84ms                                          */
+/*                 avg + st. dev. : 21.95ms                                   */
+/*                 avg - st. dev. : 15.74ms                                   */
 /******************************************************************************/
 void writeFile() {
   if(measurFile.open("MEAS.csv", O_WRITE | O_CREAT | O_APPEND)) {

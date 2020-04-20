@@ -23,7 +23,6 @@ float energy_mWh = 0.0;
 const int chipSelect = 10;
 SdFat sd;
 SdFile measurFile;
-SdFile timeFile;
 
 /******************************************************************************/
 /*  I : /                                                                     */
@@ -31,9 +30,12 @@ SdFile timeFile;
 /*  O : /                                                                     */
 /******************************************************************************/
 void setup() {
+  Serial.begin(115200);
   sd.begin(chipSelect);
   display.begin(SSD1306_SWITCHCAPVCC, 0x3C);
   ina219.begin();
+
+  measurFile.open("MEAS.csv", O_WRITE | O_CREAT | O_APPEND);
 
   // stop interrupts
   cli();
@@ -76,11 +78,7 @@ void loop() {
     //write the data at the end of MEAS.csv
     unsigned long timed = millis();
     writeFile();
-    timed = millis() - timed;
-    if(timeFile.open("TIME.txt", O_WRITE | O_CREAT | O_APPEND)){
-      timeFile.println(timed);
-      timeFile.close();
-    }
+    Serial.println(millis() - timed);
       
     //display the data on the SSD1306 display
     //displaydata();
@@ -181,7 +179,6 @@ void ina219values() {
 /*                 avg - st. dev. : 15.74ms                                   */
 /******************************************************************************/
 void writeFile() {
-  if(measurFile.open("MEAS.csv", O_WRITE | O_CREAT | O_APPEND)) {
     char buf[32], voltbuf[8]={0}, curbuf[8]={0};
 
     //prepare buffers with the voltage and current values in strings
@@ -193,8 +190,7 @@ void writeFile() {
 
     //write the line in the file
     measurFile.write(buf);
-    measurFile.close();
-  }
+    measurFile.flush();
 }
 
 /******************************************************************************/

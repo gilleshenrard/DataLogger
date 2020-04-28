@@ -36,7 +36,8 @@ void setup() {
   display.begin(&Adafruit128x64, 0x3C, OLED_RESET);
   ina219.begin();
 
-  display.setFont(System5x7);
+  display.setFont(Wendy3x5);
+  display.set2X();
   display.clear();
 
   measurFile.open("MEAS.csv", O_WRITE | O_CREAT | O_APPEND);
@@ -104,32 +105,32 @@ ISR(TIMER1_COMPA_vect){
 
 /******************************************************************************/
 /*  I : /                                                                     */
-/*  P : send the data to be displayed by the SSD1306 (takes 75ms)             */
+/*  P : send the data to be displayed by the SSD1306                          */
 /*  O : /                                                                     */
 /******************************************************************************/
 void displaydata() {
-  char buffer[32]={0};
-  char floatbuf[8]={0};
+  char buffer[14]={0};
+  char floatbuf[9]={0};
 
   display.home();
 
-  //write the first line (xxx.xxx V  xxx.xxx A)
-  dtostrf(busvoltage, 7, 3, floatbuf);
+  //write the first line (xxxx.xxx V)
+  dtostrf(busvoltage, 8, 3, floatbuf);
   sprintf(buffer, "%s V", floatbuf);
   display.println(buffer);
 
-  //write the second line (xxx.xxx A)
-  dtostrf(current_mA, 7, 3, floatbuf);
+  //write the second line (xxxx.xxx A)
+  dtostrf(current_mA, 8, 3, floatbuf);
   sprintf(buffer, "%s mA", floatbuf);
   display.println(buffer);
 
-  //write the third line (xxx.xxx mW)
-  dtostrf(power_mW, 7, 3, floatbuf);
+  //write the third line (xxxx.xxx mW)
+  dtostrf(power_mW, 8, 3, floatbuf);
   sprintf(buffer, "%s mW", floatbuf);
   display.println(buffer);
 
-  //write the fourth line (xxx.xxx mWh)
-  dtostrf(energy_mWh, 7, 3, floatbuf);
+  //write the fourth line (xxxx.xxx mWh)
+  dtostrf(energy_mWh, 8, 3, floatbuf);
   sprintf(buffer, "%s mWh", floatbuf);
   display.println(buffer);
 }

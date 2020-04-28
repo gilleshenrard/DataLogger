@@ -1,5 +1,6 @@
 #include <Adafruit_INA219.h>
-#include <Adafruit_SSD1306.h>
+#include "SSD1306Ascii.h"
+#include "SSD1306AsciiAvrI2c.h"
 #include <SdFat.h>
 
 //declare timer trigger flag and counter value
@@ -8,7 +9,7 @@ volatile unsigned long elapsed = 0;
 
 //declare SSD1306 OLED display variables
 #define OLED_RESET 4
-Adafruit_SSD1306 display(128, 64, &Wire, OLED_RESET);
+SSD1306AsciiAvrI2c display;
 
 //declare INA219 variables
 Adafruit_INA219 ina219;
@@ -32,8 +33,11 @@ SdFile measurFile;
 void setup() {
   Serial.begin(115200);
   sd.begin(chipSelect);
-  display.begin(SSD1306_SWITCHCAPVCC, 0x3C);
+  display.begin(&Adafruit128x64, 0x3C, OLED_RESET);
   ina219.begin();
+
+  display.setFont(System5x7);
+  display.clear();
 
   measurFile.open("MEAS.csv", O_WRITE | O_CREAT | O_APPEND);
 
@@ -81,7 +85,7 @@ void loop() {
     Serial.println(millis() - timed);
       
     //display the data on the SSD1306 display
-    //displaydata();
+    displaydata();
 
     //reset the flag
     triggered = false;
@@ -107,34 +111,27 @@ void displaydata() {
   char buffer[32]={0};
   char floatbuf[8]={0};
 
-  //set up the display (clear, then white colour and size 1)
-  display.clearDisplay();
-  display.setTextColor(WHITE);
-  display.setTextSize(1);
+  display.home();
 
   //write the first line (xxx.xxx V  xxx.xxx A)
-  dtostrf(busvoltage, 6, 3, floatbuf);
-  sprintf(buffer, "%s V  ", floatbuf);
-  dtostrf(current_mA, 6, 3, floatbuf);
-  strcat(buffer, floatbuf);
-  strcat(buffer, " mA");
-  display.setCursor(0, 0);
+  dtostrf(busvoltage, 7, 3, floatbuf);
+  sprintf(buffer, "%s V", floatbuf);
   display.println(buffer);
 
-  //write the second line (xxx.xxx mW)
-  dtostrf(power_mW, 6, 3, floatbuf);
+  //write the second line (xxx.xxx A)
+  dtostrf(current_mA, 7, 3, floatbuf);
+  sprintf(buffer, "%s mA", floatbuf);
+  display.println(buffer);
+
+  //write the third line (xxx.xxx mW)
+  dtostrf(power_mW, 7, 3, floatbuf);
   sprintf(buffer, "%s mW", floatbuf);
-  display.setCursor(0, 10);
   display.println(buffer);
 
-  //write the third line (xxx.xxx mWh)
-  dtostrf(energy_mWh, 6, 3, floatbuf);
+  //write the fourth line (xxx.xxx mWh)
+  dtostrf(energy_mWh, 7, 3, floatbuf);
   sprintf(buffer, "%s mWh", floatbuf);
-  display.setCursor(0, 20);
   display.println(buffer);
-  
-  //refresh the screen
-  display.display();
 }
 
 /******************************************************************************/

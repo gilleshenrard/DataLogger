@@ -31,16 +31,21 @@ SdFile measurFile;
 /*  O : /                                                                     */
 /******************************************************************************/
 void setup() {
+  //setup serial
   Serial.begin(115200);
-  sd.begin(chipSelect);
-  display.begin(&Adafruit128x64, 0x3C, OLED_RESET);
+
+  //setup the INA219
   ina219.begin();
 
+  //setup the SDcard reader
+  sd.begin(chipSelect);
+  measurFile.open("MEAS.csv", O_WRITE | O_CREAT | O_APPEND);
+
+  //setup the display
+  display.begin(&Adafruit128x64, 0x3C, OLED_RESET);
   display.setFont(Wendy3x5);
   display.set2X();
   display.clear();
-
-  measurFile.open("MEAS.csv", O_WRITE | O_CREAT | O_APPEND);
 
   // stop interrupts
   cli();

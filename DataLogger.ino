@@ -40,8 +40,9 @@ void setup() {
 
   //setup the SDcard reader
   sd.begin(chipSelect);
-  measurFile.open("MEAS.csv", O_WRITE | O_CREAT | O_APPEND);
-  measurFile.println("Time,Voltage,Current");
+  measurFile.open("MEAS.csv", O_WRITE | O_CREAT | O_TRUNC);
+  measurFile.print("Time,Voltage,Current\n");
+  measurFile.sync();
 
   //setup the display
   display.begin(&Adafruit128x64, 0x3C, OLED_RESET);

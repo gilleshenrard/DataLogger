@@ -21,7 +21,7 @@ float power_mW = 0.0;
 float energy_mWh = 0.0;
 
 //declare microSD variables
-unsigned char nbcycles = 0;
+uint16_t written = 0;
 const int chipSelect = 10;
 SdFat sd;
 SdFile measurFile;
@@ -41,6 +41,7 @@ void setup() {
   //setup the SDcard reader
   sd.begin(chipSelect);
   measurFile.open("MEAS.csv", O_WRITE | O_CREAT | O_APPEND);
+  measurFile.println("Time,Voltage,Current");
 
   //setup the display
   display.begin(&Adafruit128x64, 0x3C, OLED_RESET);
@@ -191,13 +192,13 @@ void writeFile() {
     
     //format a csv line : time,voltage,current
     sprintf(buf, "%ld,%s,%s\n", elapsed, voltbuf, curbuf);
+    written += strlen(buf);
 
     //write the line in the file
     measurFile.write(buf);
     
-    if(nbcycles >= 15)
+    if(written + 32 >= 512){
       measurFile.sync();
-
-    nbcycles++;
-    nbcycles %= 16;
+      written = 0;
+    }
 }

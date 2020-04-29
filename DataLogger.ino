@@ -21,7 +21,7 @@ float power_mW = 0.0;
 float energy_mWh = 0.0;
 
 //declare microSD variables
-uint16_t written = 0;
+uint8_t cycles = 0;
 const int chipSelect = 10;
 SdFat sd;
 SdFile measurFile;
@@ -193,13 +193,13 @@ void writeFile() {
     
     //format a csv line : time,voltage,current
     sprintf(buf, "%ld,%s,%s\n", elapsed, voltbuf, curbuf);
-    written += strlen(buf);
 
     //write the line in the file
     measurFile.write(buf);
-    
-    if(written + 32 >= 512){
+
+    if(cycles >=9)
       measurFile.sync();
-      written = 0;
-    }
+
+    cycles++;
+    cycles %= 10;
 }

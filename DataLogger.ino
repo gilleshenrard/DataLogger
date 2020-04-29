@@ -21,6 +21,7 @@ float power_mW = 0.0;
 float energy_mWh = 0.0;
 
 //declare microSD variables
+unsigned char nbcycles = 0;
 const int chipSelect = 10;
 SdFat sd;
 SdFile measurFile;
@@ -193,5 +194,10 @@ void writeFile() {
 
     //write the line in the file
     measurFile.write(buf);
-    measurFile.flush();
+    
+    if(nbcycles >= 15)
+      measurFile.sync();
+
+    nbcycles++;
+    nbcycles %= 16;
 }

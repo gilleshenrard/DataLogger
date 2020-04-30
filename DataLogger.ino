@@ -93,7 +93,7 @@ void loop() {
     writeFile();
     Serial.println(millis() - timed);
       
-    //display the data on the SSD1306 display
+    //display the data on the SSD1306 display (deactivated during SD timing tests)
     displaydata();
 
     //reset the flag
@@ -175,15 +175,6 @@ void ina219values() {
 /*  P : Append the measurments in a CSV file                                  */
 /*  O : /                                                                     */
 /******************************************************************************/
-/******************************************************************************/
-/*  Timing tests : wrote timings in a separate file (1234 iterations),        */
-/*                   removed occasional hiccups (time > 130 ms)               */
-/*                 min : 14ms                                                 */
-/*                 max : 47ms                                                 */
-/*                 average : 18.84ms                                          */
-/*                 avg + st. dev. : 21.95ms                                   */
-/*                 avg - st. dev. : 15.74ms                                   */
-/******************************************************************************/
 void writeFile() {
     char buf[32], voltbuf[8]={0}, curbuf[8]={0};
 
@@ -191,15 +182,17 @@ void writeFile() {
     dtostrf(loadvoltage, 6, 3, voltbuf);
     dtostrf(current_mA, 6, 3, curbuf);
     
-    //format a csv line : time,voltage,current
+    //format a csv line : time,voltage,current\n
     sprintf(buf, "%ld,%s,%s\n", elapsed, voltbuf, curbuf);
 
     //write the line in the file
     measurFile.write(buf);
 
+    //after 9 cycles (1 sec.), apply SD buffer changes to file in SD
     if(cycles >=9)
       measurFile.sync();
 
+    //increment cycles count + reset to 0 after 10 cycles
     cycles++;
     cycles %= 10;
 }

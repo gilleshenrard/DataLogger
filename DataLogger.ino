@@ -22,7 +22,7 @@ float energy_mWh = 0.0;
 
 //declare microSD variables
 uint8_t cycles = 0;
-const int chipSelect = 10;
+const uint8_t chipSelect = 10;
 SdFat sd;
 SdFile measurFile;
 

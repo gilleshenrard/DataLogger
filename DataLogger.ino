@@ -46,8 +46,7 @@ void setup() {
 
   //setup the display
   display.begin(&Adafruit128x64, 0x3C, OLED_RESET);
-  display.setFont(Wendy3x5);
-  display.set2X();
+  display.setFont(System5x7);
   display.clear();
 
   // stop interrupts
@@ -113,28 +112,28 @@ ISR(TIMER1_COMPA_vect){
 
 /******************************************************************************/
 /*  I : /                                                                     */
-/*  P : send the data to be displayed by the SSD1306                          */
+/*  P : send the data to be displayed by the SSD1306 (takes 72ms)             */
 /*  O : /                                                                     */
 /******************************************************************************/
 void displaydata() {
   char buffer[14]={0};
-  char floatbuf[9]={0};
+  char floatbuf[10]={0};
 
   display.home();
 
   //write the first line (xxxx.xxx V)
   dtostrf(busvoltage, 8, 3, floatbuf);
-  sprintf(buffer, "%s V", floatbuf);
+  sprintf(buffer, "%s V\n", floatbuf);
   display.println(buffer);
 
   //write the second line (xxxx.xxx A)
   dtostrf(current_mA, 8, 3, floatbuf);
-  sprintf(buffer, "%s mA", floatbuf);
+  sprintf(buffer, "%s mA\n", floatbuf);
   display.println(buffer);
 
   //write the third line (xxxx.xxx mW)
   dtostrf(power_mW, 8, 3, floatbuf);
-  sprintf(buffer, "%s mW", floatbuf);
+  sprintf(buffer, "%s mW\n", floatbuf);
   display.println(buffer);
 
   //write the fourth line (xxxx.xxx mWh)

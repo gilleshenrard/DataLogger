@@ -20,6 +20,10 @@ float loadvoltage = 0.0;
 float power_mW = 0.0;
 float energy_mWh = 0.0;
 
+//declare display formatting variables
+char buffer[14]={0};
+char floatbuf[10]={0};
+
 //declare microSD variables
 uint8_t cycles = 0;
 const uint8_t chipSelect = 10;
@@ -93,7 +97,10 @@ void loop() {
     Serial.println(millis() - timed);
       
     //display the data on the SSD1306 display (deactivated during SD timing tests)
-    displaydata();
+    displayvoltage();
+    displaycurrent();
+    displaypower();
+    displayenergy();
 
     //reset the flag
     triggered = false;
@@ -112,29 +119,53 @@ ISR(TIMER1_COMPA_vect){
 
 /******************************************************************************/
 /*  I : /                                                                     */
-/*  P : send the data to be displayed by the SSD1306 (takes 72ms)             */
+/*  P : send the voltage to be displayed by the SSD1306                       */
 /*  O : /                                                                     */
 /******************************************************************************/
-void displaydata() {
-  char buffer[14]={0};
-  char floatbuf[10]={0};
-
+void displayvoltage() {
   display.home();
 
   //write the first line (xxxx.xxx V)
   dtostrf(busvoltage, 8, 3, floatbuf);
   sprintf(buffer, "%s V\n", floatbuf);
   display.println(buffer);
+}
+
+/******************************************************************************/
+/*  I : /                                                                     */
+/*  P : send the current to be displayed by the SSD1306                       */
+/*  O : /                                                                     */
+/******************************************************************************/
+void displaycurrent() {
+  display.setCursor(0, 10);
 
   //write the second line (xxxx.xxx A)
   dtostrf(current_mA, 8, 3, floatbuf);
   sprintf(buffer, "%s mA\n", floatbuf);
   display.println(buffer);
+}
+
+/******************************************************************************/
+/*  I : /                                                                     */
+/*  P : send the power to be displayed by the SSD1306                         */
+/*  O : /                                                                     */
+/******************************************************************************/
+void displaypower() {
+  display.setCursor(0, 20);
 
   //write the third line (xxxx.xxx mW)
   dtostrf(power_mW, 8, 3, floatbuf);
   sprintf(buffer, "%s mW\n", floatbuf);
   display.println(buffer);
+}
+
+/******************************************************************************/
+/*  I : /                                                                     */
+/*  P : send the energy to be displayed by the SSD1306                        */
+/*  O : /                                                                     */
+/******************************************************************************/
+void displayenergy() {
+  display.setCursor(0, 30);
 
   //write the fourth line (xxxx.xxx mWh)
   dtostrf(energy_mWh, 8, 3, floatbuf);

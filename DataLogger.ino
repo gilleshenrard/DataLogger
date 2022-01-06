@@ -123,11 +123,11 @@ ISR(TIMER1_COMPA_vect){
 /*  O : /                                                                     */
 /******************************************************************************/
 void displayvoltage() {
-  display.home();
-
   //write the first line (xxxx.xxx V)
   dtostrf(busvoltage, 8, 3, floatbuf);
   sprintf(buffer, "%s V\n", floatbuf);
+  
+  display.setCursor(0, 0);
   display.println(buffer);
 }
 
@@ -137,11 +137,11 @@ void displayvoltage() {
 /*  O : /                                                                     */
 /******************************************************************************/
 void displaycurrent() {
-  display.setCursor(0, 10);
-
   //write the second line (xxxx.xxx A)
   dtostrf(current_mA, 8, 3, floatbuf);
   sprintf(buffer, "%s mA\n", floatbuf);
+
+  display.setCursor(0, 10);
   display.println(buffer);
 }
 
@@ -151,11 +151,11 @@ void displaycurrent() {
 /*  O : /                                                                     */
 /******************************************************************************/
 void displaypower() {
-  display.setCursor(0, 20);
-
   //write the third line (xxxx.xxx mW)
   dtostrf(power_mW, 8, 3, floatbuf);
   sprintf(buffer, "%s mW\n", floatbuf);
+
+  display.setCursor(0, 20);
   display.println(buffer);
 }
 
@@ -165,11 +165,11 @@ void displaypower() {
 /*  O : /                                                                     */
 /******************************************************************************/
 void displayenergy() {
-  display.setCursor(0, 30);
-
   //write the fourth line (xxxx.xxx mWh)
   dtostrf(energy_mWh, 8, 3, floatbuf);
   sprintf(buffer, "%s mWh", floatbuf);
+
+  display.setCursor(0, 30);
   display.println(buffer);
 }
 

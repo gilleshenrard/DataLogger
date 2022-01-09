@@ -122,16 +122,19 @@ ISR(TIMER1_COMPA_vect){
 /*  O : /                                                                     */
 /******************************************************************************/
 void displayvoltage() {
+  //if value hasn't changed, skip refresh
   if(busvoltage == oldvolt)
 	return;
 
-  //write the first line (xxxx.xxx V)
+  //format the first line (xxxx.xxx V)
   dtostrf(busvoltage, 8, 3, floatbuf);
   strcat(floatbuf, " V");
   
+  //place the cursor and write the line
   display.setCursor(0, 0);
   display.print(floatbuf);
 
+  //update the voltage buffer
   oldvolt = busvoltage;
 }
 
@@ -141,16 +144,19 @@ void displayvoltage() {
 /*  O : /                                                                     */
 /******************************************************************************/
 void displaycurrent() {
+  //if value hasn't changed, skip refresh
   if(current_mA == oldcurr)
 	return;
 
-  //write the second line (xxxx.xxx A)
+  //format the second line (xxxx.xxx A)
   dtostrf(current_mA, 8, 3, floatbuf);
   strcat(floatbuf, " mA");
 
+  //place the cursor and write the line
   display.setCursor(0, 2);
   display.print(floatbuf);
 
+  //update the current buffer
   oldcurr = current_mA;
 }
 
@@ -160,16 +166,19 @@ void displaycurrent() {
 /*  O : /                                                                     */
 /******************************************************************************/
 void displaypower() {
+  //if value hasn't changed, skip refresh
   if(power_mW == oldpow)
 	return;
 
-  //write the third line (xxxx.xxx mW)
+  //format the third line (xxxx.xxx mW)
   dtostrf(power_mW, 8, 3, floatbuf);
   strcat(floatbuf, " mW");
 
+  //place the cursor and write the line
   display.setCursor(0, 4);
   display.print(floatbuf);
 
+  //update the power buffer
   oldpow = power_mW;
 }
 
@@ -179,16 +188,19 @@ void displaypower() {
 /*  O : /                                                                     */
 /******************************************************************************/
 void displayenergy() {
+  //if value hasn't changed, skip refresh
   if(energy_mWh == oldegy)
 	return;
 
-  //write the fourth line (xxxx.xxx mWh)
+  //format the fourth line (xxxx.xxx mWh)
   dtostrf(energy_mWh, 8, 3, floatbuf);
   strcat(floatbuf, " mWh");
 
+  //place the cursor and write the line
   display.setCursor(0, 6);
   display.print(floatbuf);
 
+  //update the energy buffer
   oldegy = energy_mWh;
 }
 

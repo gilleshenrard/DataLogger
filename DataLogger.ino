@@ -14,11 +14,11 @@ SSD1306AsciiAvrI2c display;
 //declare INA219 variables
 Adafruit_INA219 ina219;
 float shuntvoltage = 0.0;
-float busvoltage = 0.0;
-float current_mA = 0.0;
+float busvoltage = 0.0, oldvolt = 0.0;
+float current_mA = 0.0, oldcurr = 0.0;
 float loadvoltage = 0.0;
-float power_mW = 0.0;
-float energy_mWh = 0.0;
+float power_mW = 0.0, oldpow = 0.0;
+float energy_mWh = 0.0, oldegy = 0.0;
 
 //declare display formatting variables
 char floatbuf[16]={0};
@@ -122,12 +122,17 @@ ISR(TIMER1_COMPA_vect){
 /*  O : /                                                                     */
 /******************************************************************************/
 void displayvoltage() {
+  if(busvoltage == oldvolt)
+	return;
+
   //write the first line (xxxx.xxx V)
   dtostrf(busvoltage, 8, 3, floatbuf);
   strcat(floatbuf, " V");
   
   display.setCursor(0, 0);
   display.print(floatbuf);
+
+  oldvolt = busvoltage;
 }
 
 /******************************************************************************/
@@ -136,12 +141,17 @@ void displayvoltage() {
 /*  O : /                                                                     */
 /******************************************************************************/
 void displaycurrent() {
+  if(current_mA == oldcurr)
+	return;
+
   //write the second line (xxxx.xxx A)
   dtostrf(current_mA, 8, 3, floatbuf);
   strcat(floatbuf, " mA");
 
   display.setCursor(0, 2);
   display.print(floatbuf);
+
+  oldcurr = current_mA;
 }
 
 /******************************************************************************/
@@ -150,12 +160,17 @@ void displaycurrent() {
 /*  O : /                                                                     */
 /******************************************************************************/
 void displaypower() {
+  if(power_mW == oldpow)
+	return;
+
   //write the third line (xxxx.xxx mW)
   dtostrf(power_mW, 8, 3, floatbuf);
   strcat(floatbuf, " mW");
 
   display.setCursor(0, 4);
   display.print(floatbuf);
+
+  oldpow = power_mW;
 }
 
 /******************************************************************************/
@@ -164,12 +179,17 @@ void displaypower() {
 /*  O : /                                                                     */
 /******************************************************************************/
 void displayenergy() {
+  if(energy_mWh == oldegy)
+	return;
+
   //write the fourth line (xxxx.xxx mWh)
   dtostrf(energy_mWh, 8, 3, floatbuf);
   strcat(floatbuf, " mWh");
 
   display.setCursor(0, 6);
   display.print(floatbuf);
+
+  oldegy = energy_mWh;
 }
 
 /******************************************************************************/

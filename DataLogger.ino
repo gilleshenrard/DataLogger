@@ -127,7 +127,7 @@ void displayvoltage() {
   strcat(floatbuf, " V");
   
   display.setCursor(0, 0);
-  display.println(floatbuf);
+  display.print(floatbuf);
 }
 
 /******************************************************************************/
@@ -140,8 +140,8 @@ void displaycurrent() {
   dtostrf(current_mA, 8, 3, floatbuf);
   strcat(floatbuf, " mA");
 
-  display.setCursor(0, 10);
-  display.println(floatbuf);
+  display.setCursor(0, 2);
+  display.print(floatbuf);
 }
 
 /******************************************************************************/
@@ -154,8 +154,8 @@ void displaypower() {
   dtostrf(power_mW, 8, 3, floatbuf);
   strcat(floatbuf, " mW");
 
-  display.setCursor(0, 20);
-  display.println(floatbuf);
+  display.setCursor(0, 4);
+  display.print(floatbuf);
 }
 
 /******************************************************************************/
@@ -168,8 +168,8 @@ void displayenergy() {
   dtostrf(energy_mWh, 8, 3, floatbuf);
   strcat(floatbuf, " mWh");
 
-  display.setCursor(0, 30);
-  display.println(floatbuf);
+  display.setCursor(0, 6);
+  display.print(floatbuf);
 }
 
 /******************************************************************************/

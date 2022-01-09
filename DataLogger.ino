@@ -21,8 +21,7 @@ float power_mW = 0.0;
 float energy_mWh = 0.0;
 
 //declare display formatting variables
-char buffer[14]={0};
-char floatbuf[10]={0};
+char floatbuf[16]={0};
 
 //declare microSD variables
 uint8_t cycles = 0;
@@ -125,10 +124,10 @@ ISR(TIMER1_COMPA_vect){
 void displayvoltage() {
   //write the first line (xxxx.xxx V)
   dtostrf(busvoltage, 8, 3, floatbuf);
-  sprintf(buffer, "%s V\n", floatbuf);
+  strcat(floatbuf, " V");
   
   display.setCursor(0, 0);
-  display.println(buffer);
+  display.println(floatbuf);
 }
 
 /******************************************************************************/
@@ -139,10 +138,10 @@ void displayvoltage() {
 void displaycurrent() {
   //write the second line (xxxx.xxx A)
   dtostrf(current_mA, 8, 3, floatbuf);
-  sprintf(buffer, "%s mA\n", floatbuf);
+  strcat(floatbuf, " mA");
 
   display.setCursor(0, 10);
-  display.println(buffer);
+  display.println(floatbuf);
 }
 
 /******************************************************************************/
@@ -153,10 +152,10 @@ void displaycurrent() {
 void displaypower() {
   //write the third line (xxxx.xxx mW)
   dtostrf(power_mW, 8, 3, floatbuf);
-  sprintf(buffer, "%s mW\n", floatbuf);
+  strcat(floatbuf, " mW");
 
   display.setCursor(0, 20);
-  display.println(buffer);
+  display.println(floatbuf);
 }
 
 /******************************************************************************/
@@ -167,10 +166,10 @@ void displaypower() {
 void displayenergy() {
   //write the fourth line (xxxx.xxx mWh)
   dtostrf(energy_mWh, 8, 3, floatbuf);
-  sprintf(buffer, "%s mWh", floatbuf);
+  strcat(floatbuf, " mWh");
 
   display.setCursor(0, 30);
-  display.println(buffer);
+  display.println(floatbuf);
 }
 
 /******************************************************************************/

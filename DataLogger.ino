@@ -96,10 +96,10 @@ void loop() {
     Serial.println(millis() - timed);
       
     //display the data on the SSD1306 display (deactivated during SD timing tests)
-    displayvoltage();
-    displaycurrent();
-    displaypower();
-    displayenergy();
+	displayline(busvoltage, oldvolt, 0, " V");
+	displayline(current_mA, oldcurr, 2, " mA");
+	displayline(power_mW, oldpow, 4, " mW");
+	displayline(energy_mWh, oldegy, 6, " mWh");
 
     //reset the flag
     triggered = false;
@@ -116,92 +116,29 @@ ISR(TIMER1_COMPA_vect){
   elapsed += 100;
 }
 
-/******************************************************************************/
-/*  I : /                                                                     */
-/*  P : send the voltage to be displayed by the SSD1306                       */
-/*  O : /                                                                     */
-/******************************************************************************/
-void displayvoltage() {
+/****************************************************************************/
+/*  I : Value measured to display                                           */
+/*		Buffer holding the last saved measurment							*/
+/*		Line number at which display the value								*/
+/*		End of line (unit) to append to the line							*/
+/*  P : Format and display a measurment at the right line, only if changed	*/
+/*  O : /                                                                   */
+/****************************************************************************/
+void displayline(const float measurment, float measbuffer, const uint8_t line_num, const char line_end[]) {
   //if value hasn't changed, skip refresh
-  if(busvoltage == oldvolt)
+  if(measurment == measbuffer)
 	return;
 
-  //format the first line (xxxx.xxx V)
-  dtostrf(busvoltage, 8, 3, floatbuf);
-  strcat(floatbuf, " V");
+  //format the line (xxxx.xxx [unit])
+  dtostrf(measurment, 8, 3, floatbuf);
+  strcat(floatbuf, line_end);
   
   //place the cursor and write the line
-  display.setCursor(0, 0);
+  display.setCursor(0, line_num);
   display.print(floatbuf);
 
-  //update the voltage buffer
-  oldvolt = busvoltage;
-}
-
-/******************************************************************************/
-/*  I : /                                                                     */
-/*  P : send the current to be displayed by the SSD1306                       */
-/*  O : /                                                                     */
-/******************************************************************************/
-void displaycurrent() {
-  //if value hasn't changed, skip refresh
-  if(current_mA == oldcurr)
-	return;
-
-  //format the second line (xxxx.xxx A)
-  dtostrf(current_mA, 8, 3, floatbuf);
-  strcat(floatbuf, " mA");
-
-  //place the cursor and write the line
-  display.setCursor(0, 2);
-  display.print(floatbuf);
-
-  //update the current buffer
-  oldcurr = current_mA;
-}
-
-/******************************************************************************/
-/*  I : /                                                                     */
-/*  P : send the power to be displayed by the SSD1306                         */
-/*  O : /                                                                     */
-/******************************************************************************/
-void displaypower() {
-  //if value hasn't changed, skip refresh
-  if(power_mW == oldpow)
-	return;
-
-  //format the third line (xxxx.xxx mW)
-  dtostrf(power_mW, 8, 3, floatbuf);
-  strcat(floatbuf, " mW");
-
-  //place the cursor and write the line
-  display.setCursor(0, 4);
-  display.print(floatbuf);
-
-  //update the power buffer
-  oldpow = power_mW;
-}
-
-/******************************************************************************/
-/*  I : /                                                                     */
-/*  P : send the energy to be displayed by the SSD1306                        */
-/*  O : /                                                                     */
-/******************************************************************************/
-void displayenergy() {
-  //if value hasn't changed, skip refresh
-  if(energy_mWh == oldegy)
-	return;
-
-  //format the fourth line (xxxx.xxx mWh)
-  dtostrf(energy_mWh, 8, 3, floatbuf);
-  strcat(floatbuf, " mWh");
-
-  //place the cursor and write the line
-  display.setCursor(0, 6);
-  display.print(floatbuf);
-
-  //update the energy buffer
-  oldegy = energy_mWh;
+  //update the last measurment buffer
+  measbuffer = measurment;
 }
 
 /******************************************************************************/

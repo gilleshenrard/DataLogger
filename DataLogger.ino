@@ -94,12 +94,34 @@ void loop() {
     unsigned long timed = millis();
     writeFile();
     Serial.println(millis() - timed);
-      
-    //display the data on the SSD1306 display (deactivated during SD timing tests)
-	displayline(busvoltage, oldvolt, 0, " V");
-	displayline(current_mA, oldcurr, 2, " mA");
-	displayline(power_mW, oldpow, 4, " mW");
-	displayline(energy_mWh, oldegy, 6, " mWh");
+	
+	//
+	//	Display update procedure in main loop to avoid
+	//		wasting clock time in function call
+	//
+    //update the voltage line on the SSD1306 display
+	if(busvoltage != oldvolt){
+		displayline(busvoltage, 0, " V");
+		oldvolt = busvoltage;
+	}
+	
+    //update the current line on the SSD1306 display
+	if(current_mA != oldcurr){
+		displayline(current_mA, 2, " mA");
+		oldcurr = current_mA;
+	}
+	
+    //update the power line on the SSD1306 display
+	if(power_mW != oldpow){
+		displayline(power_mW, oldpow, 4, " mW");
+		oldpow = power_mW;
+	}
+	
+    //update the energy line on the SSD1306 display
+	if(energy_mWh != oldegy){
+		displayline(energy_mWh, oldegy, 6, " mWh");
+		oldegy = energy_mWh;
+	}
 
     //reset the flag
     triggered = false;
@@ -124,11 +146,7 @@ ISR(TIMER1_COMPA_vect){
 /*  P : Format and display a measurment at the right line, only if changed	*/
 /*  O : /                                                                   */
 /****************************************************************************/
-void displayline(const float measurment, float measbuffer, const uint8_t line_num, const char line_end[]) {
-  //if value hasn't changed, skip refresh
-  if(measurment == measbuffer)
-	return;
-
+void displayline(const float measurment, const uint8_t line_num, const char line_end[]) {
   //format the line (xxxx.xxx [unit])
   dtostrf(measurment, 8, 3, floatbuf);
   strcat(floatbuf, line_end);
@@ -136,9 +154,6 @@ void displayline(const float measurment, float measbuffer, const uint8_t line_nu
   //place the cursor and write the line
   display.setCursor(0, line_num);
   display.print(floatbuf);
-
-  //update the last measurment buffer
-  measbuffer = measurment;
 }
 
 /******************************************************************************/

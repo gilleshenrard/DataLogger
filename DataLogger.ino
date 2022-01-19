@@ -14,9 +14,9 @@ SSD1306AsciiAvrI2c display;
 //declare INA219 variables
 Adafruit_INA219 ina219;
 float shuntvoltage = 0.0;
-float busvoltage = 0.0, oldvolt = 0.0;
+float busvoltage = 0.0;
 float current_mA = 0.0, oldcurr = 0.0;
-float loadvoltage = 0.0;
+float loadvoltage = 0.0, oldvolt = 0.0;
 float power_mW = 0.0, oldpow = 0.0;
 float energy_mWh = 0.0, oldegy = 0.0;
 
@@ -100,9 +100,9 @@ void loop() {
 	//		wasting clock time in function call
 	//
     //update the voltage line on the SSD1306 display
-	if(busvoltage != oldvolt){
-		displayline(busvoltage, 0, " V");
-		oldvolt = busvoltage;
+	if(loadvoltage != oldvolt){
+		displayline(loadvoltage, 0, " V");
+		oldvolt = loadvoltage;
 	}
 	
     //update the current line on the SSD1306 display

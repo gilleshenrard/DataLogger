@@ -113,13 +113,13 @@ void loop() {
 	
     //update the power line on the SSD1306 display
 	if(power_mW != oldpow){
-		displayline(power_mW, oldpow, 4, " mW");
+		displayline(power_mW, 4, " mW");
 		oldpow = power_mW;
 	}
 	
     //update the energy line on the SSD1306 display
 	if(energy_mWh != oldegy){
-		displayline(energy_mWh, oldegy, 6, " mWh");
+		displayline(energy_mWh, 6, " mWh");
 		oldegy = energy_mWh;
 	}
 

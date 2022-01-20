@@ -1,6 +1,5 @@
 #include <Adafruit_INA219.h>
-#include "SSD1306Ascii.h"
-#include "SSD1306AsciiAvrI2c.h"
+#include <SSD1306AsciiAvrI2c.h>
 #include <SdFat.h>
 
 //declare timer trigger flag and counter value

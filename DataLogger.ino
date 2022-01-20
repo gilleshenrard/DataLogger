@@ -24,7 +24,7 @@ char floatbuf[16]={0};
 
 //declare microSD variables
 uint8_t cycles = 0;
-const uint8_t chipSelect = 10;
+#define CHIPSELECT 10
 SdFat sd;
 SdFile measurFile;
 
@@ -41,7 +41,7 @@ void setup() {
   ina219.begin();
 
   //setup the SDcard reader
-  sd.begin(chipSelect);
+  sd.begin(CHIPSELECT);
   measurFile.open("MEAS.csv", O_WRITE | O_CREAT | O_TRUNC);
   measurFile.print("Time,Voltage,Current\n");
   measurFile.sync();

@@ -23,10 +23,13 @@ float energy_mWh = 0.0, oldegy = 0.0;
 char floatbuf[16]={0};
 
 //declare microSD variables
-uint8_t cycles = 0;
 #define CHIPSELECT 10
-SdFat sd;
-SdFile measurFile;
+#define ENABLE_DEDICATED_SPI 1
+#define SD_CONFIG SdSpiConfig(SD_CS_PIN, DEDICATED_SPI, SPI_CLOCK)
+#define SPI_DRIVER_SELECT 0
+uint8_t cycles = 0;
+SdFat32 sd;
+File32 measurFile;
 
 /******************************************************************************/
 /*  I : /                                                                     */

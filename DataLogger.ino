@@ -4,7 +4,6 @@
 
 //declare timer trigger flag and counter value
 volatile boolean triggered = false;
-volatile unsigned long elapsed = 0;
 
 //declare SSD1306 OLED display variables
 #define OLED_RESET 4
@@ -18,6 +17,7 @@ float current_mA = 0.0, oldcurr = 0.0;
 float loadvoltage = 0.0, oldvolt = 0.0;
 float power_mW = 0.0, oldpow = 0.0;
 float energy_mWh = 0.0, oldegy = 0.0;
+unsigned long elapsed = 0;
 
 //declare display formatting variables
 char floatbuf[16]={0};
@@ -137,7 +137,6 @@ void loop() {
 /****************************************************************************/
 ISR(TIMER1_COMPA_vect){
   triggered = true;
-  elapsed += 100;
 }
 
 /****************************************************************************/
@@ -171,6 +170,7 @@ void ina219values() {
   shuntvoltage = ina219.getShuntVoltage_mV();
   busvoltage = ina219.getBusVoltage_V();
   current_mA = ina219.getCurrent_mA();
+  elapsed = millis();
 
   //turn the INA219 off
   ina219.powerSave(true);

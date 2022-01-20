@@ -191,11 +191,11 @@ void ina219values() {
 /*  O : /                                                                     */
 /******************************************************************************/
 void writeFile() {
-    char buf[32], voltbuf[8]={0}, curbuf[8]={0};
+    char buf[32], voltbuf[16]={0}, curbuf[16]={0};
 
     //prepare buffers with the voltage and current values in strings
-    dtostrf(loadvoltage, 6, 3, voltbuf);
-    dtostrf(current_mA, 6, 3, curbuf);
+    dtostrf(loadvoltage, 8, 3, voltbuf);
+    dtostrf(current_mA, 8, 3, curbuf);
     
     //format a csv line : time,voltage,current\n
     sprintf(buf, "%ld,%s,%s\n", elapsed, voltbuf, curbuf);

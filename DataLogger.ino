@@ -148,8 +148,8 @@ ISR(TIMER1_COMPA_vect){
 /*  O : /                                                                   */
 /****************************************************************************/
 void displayline(const float measurment, const uint8_t line_num, const char line_end[]) {
-  //format the line (xxxx.xxx [unit])
-  dtostrf(measurment, 8, 3, floatbuf);
+  //format the line ([-]xxxxx.xxx [unit])
+  dtostrf(measurment, 10, 3, floatbuf);
   strcat(floatbuf, line_end);
   
   //place the cursor and write the line
@@ -194,8 +194,8 @@ void writeFile() {
     char buf[32], voltbuf[16]={0}, curbuf[16]={0};
 
     //prepare buffers with the voltage and current values in strings
-    dtostrf(loadvoltage, 8, 3, voltbuf);
-    dtostrf(current_mA, 8, 3, curbuf);
+    dtostrf(loadvoltage, 10, 3, voltbuf);
+    dtostrf(current_mA, 10, 3, curbuf);
     
     //format a csv line : time,voltage,current\n
     sprintf(buf, "%ld,%s,%s\n", elapsed, voltbuf, curbuf);

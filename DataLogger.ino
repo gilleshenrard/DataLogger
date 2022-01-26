@@ -11,8 +11,6 @@ SSD1306AsciiAvrI2c display;
 
 //declare INA219 variables
 Adafruit_INA219 ina219;
-float shuntvoltage = 0.0;
-float busvoltage = 0.0;
 float current_mA = 0.0, oldcurr = 0.0;
 float loadvoltage = 0.0, oldvolt = 0.0;
 float power_mW = 0.0, oldpow = 0.0;
@@ -163,6 +161,9 @@ void displayline(const float measurment, const uint8_t line_num, const char line
 /*  O : /                                                                     */
 /******************************************************************************/
 void ina219values() {
+  float shuntvoltage = 0.0;
+  float busvoltage = 0.0;
+  
   //turn the INA219 on
   ina219.powerSave(false);
   

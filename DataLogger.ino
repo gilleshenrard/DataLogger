@@ -89,12 +89,13 @@ void loop() {
   //if timer has been reached
   if (triggered)
   {
-    unsigned long timed = millis();
     //get the values measured by the INA219
     ina219values();
 
     //write the data at the end of MEAS.csv
+    unsigned long timed = millis();
     writeFile();
+    Serial.println(millis() - timed);
 	
 	//
 	//	Display update procedure in main loop to avoid
@@ -123,13 +124,9 @@ void loop() {
 		displayline(energy_mWh, 6, " mWh");
 		oldegy = energy_mWh;
 	}
-	
-	//reset the flag
+
+    //reset the flag
     triggered = false;
-	
-	unsigned long timed2 = millis() - timed;
-	if(timed2 < 99)
-		set_sleep_mode (SLEEP_MODE_IDLE);
   }
 }
 

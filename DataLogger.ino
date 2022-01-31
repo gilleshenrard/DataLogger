@@ -35,8 +35,9 @@ File32 measurFile;
 /*  O : /                                                                     */
 /******************************************************************************/
 void setup() {
-  //setup serial
-  Serial.begin(115200);
+  // Disable ADC
+  ADCSRA = 0;
+  ACSR = 0x80;
 
   //setup the INA219
   ina219.begin();
@@ -87,7 +88,6 @@ void loop() {
   //if timer has been reached
   if (triggered)
   {
-	unsigned long timed = millis();
     //get the values measured by the INA219
     ina219values();
 
@@ -124,7 +124,6 @@ void loop() {
 
     //reset the flag
     triggered = false;
-	Serial.println(millis() - timed);
   }
 }
 

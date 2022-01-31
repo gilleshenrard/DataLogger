@@ -1,7 +1,7 @@
 # DataLogger
 An Arduino-based data logger, from the work of GreatScott
 
----
+
 ## 1. Introduction
 As mentioned, this project is based on the work of GreatScott. It merely aims on learning and improvement.
 
@@ -14,7 +14,7 @@ somewhere.
 
 It can have a display, a storage space, anything useful to treat data.
 
----
+
 ## 2. Improvements
 ###	a. Display
 * Used SSD1306AsciiAvrI2c.h instead of Adafruit_SSD1306.h (more optimised)
@@ -33,3 +33,20 @@ It can have a display, a storage space, anything useful to treat data.
 * Used an Arduino Pro Mini 3.3V (less power consumption)
 * Used a timer interrupt instead of a timed loop (more precise when cycle < 100 ms)
 * Fixed a power consumption calculation mistake (0.1s / 3600s/h)
+
+
+## 3. To Improve
+* Sometimes (34 times over 26500 cycles), SD logging can take up to 100ms alone.
+    * Use of a circular buffer to write 64 bytes blocks at a time
+	* Use of a binary file instead of a text file
+	* Asynchronous use of the files (measurments buffered each 100ms, then written when free time)
+* Power consumption is still high
+    * Disable Brownout Detection, as it is useless because of the LiPo management chip (Vin always = 4.2V)
+	* Use of sleep modes
+	* SD card reader can be disconnected via a MOSFET at VCC when not used
+* SD logging is not necessary when no SD card is inserted. Can be disabled then.
+* Screen refresh every 100 ms can be hard to read
+    * A potentiometer to vary the screen refresh rate
+	* A button to completely hold a value
+* Power measurment is done by dividing by 100 ms, which is not accurate
+    * Must divide by the time elapsed since last cycle

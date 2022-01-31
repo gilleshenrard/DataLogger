@@ -17,9 +17,6 @@ float power_mW = 0.0, oldpow = 0.0;
 float energy_mWh = 0.0, oldegy = 0.0;
 unsigned long elapsed = 0;
 
-//declare display formatting variables
-char floatbuf[16]={0};
-
 //declare microSD variables
 #define CHIPSELECT 10
 #define ENABLE_DEDICATED_SPI 1
@@ -145,6 +142,8 @@ ISR(TIMER1_COMPA_vect){
 /*  O : /                                                                   */
 /****************************************************************************/
 void displayline(const float measurment, const uint8_t line_num, const char line_end[]) {
+  char floatbuf[16]={0};
+  
   //format the line ([-]xxxxx.xxx [unit])
   dtostrf(measurment, 10, 3, floatbuf);
   strcat(floatbuf, line_end);

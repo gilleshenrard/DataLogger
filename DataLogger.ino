@@ -87,13 +87,12 @@ void loop() {
   //if timer has been reached
   if (triggered)
   {
+	unsigned long timed = millis();
     //get the values measured by the INA219
     ina219values();
 
     //write the data at the end of MEAS.csv
-    unsigned long timed = millis();
     writeFile();
-    Serial.println(millis() - timed);
 	
 	//
 	//	Display update procedure in main loop to avoid
@@ -125,6 +124,7 @@ void loop() {
 
     //reset the flag
     triggered = false;
+	Serial.println(millis() - timed);
   }
 }
 

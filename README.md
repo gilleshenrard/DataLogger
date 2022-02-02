@@ -41,12 +41,12 @@ It can have a display, a storage space, anything useful to treat data.
 	* Use of a binary file instead of a text file
 	* Asynchronous use of the files (measurments buffered each 100ms, then written when free time)
 * Power consumption is still high
-    * Disable Brownout Detection, as it is useless because of the LiPo management chip (Vin always = 4.2V)
+    * Disable Brownout Detection, as it is almost useless because of the LiPo management chip (Vcc never < 2.4V)
 	* Use of sleep modes
-	* SD card reader can be disconnected via a MOSFET at VCC when not used
+	* SD card reader can be disconnected via an NPN transistor (150 mA Ic capable) at VCC when not used
 * SD logging is not necessary when no SD card is inserted. Can be disabled then.
 * Screen refresh every 100 ms can be hard to read
-    * A potentiometer to vary the screen refresh rate
-	* A button to completely hold a value
+    * A switch to choose between 100ms and 300ms refresh rate
+	* A button to hold a value
 * Power measurment is done by dividing by 100 ms, which is not accurate
     * Must divide by the time elapsed since last cycle

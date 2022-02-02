@@ -35,10 +35,6 @@ void setup() {
   // Disable ADC
   ADCSRA = 0;
   ACSR = 0x80;
-  
-  //turn on the MOSFET connecting SD reader to VCC
-  pinMode(A2, OUTPUT);
-  digitalWrite(A2, HIGH);
 
   //setup the INA219
   ina219.begin();

@@ -180,8 +180,8 @@ void ina219values() {
   //compute the power consumed
   power_mW = loadvoltage*current_mA;
   
-  //compute the energy consumed (t = 0.1s / 3600)
-  energy_mWh += power_mW / 36000.0;
+  //compute the energy consumed (t = elapsed[ms] / 3600[s/h] * 1000[ms/s])
+  energy_mWh += power_mW * ( elapsed / 3600000.0);
 }
 
 /******************************************************************************/

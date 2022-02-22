@@ -32,7 +32,7 @@ It can have a display, a storage space, anything useful to treat data.
 * Disabled ADC (less power consumption)
 * Used an Arduino Pro Mini 3.3V (less power consumption)
 * Used a timer interrupt instead of a timed loop (more precise when cycle < 100 ms)
-* Fixed a power consumption calculation mistake (0.1s / 3600s/h)
+* Fixed a power consumption calculation mistake (t = elapsed[ms] / (3600[s/h] * 1000[ms/s]))
 
 
 ## 3. To Improve
@@ -43,10 +43,7 @@ It can have a display, a storage space, anything useful to treat data.
 * Power consumption is still high
     * Disable Brownout Detection, as it is almost useless because of the LiPo management chip (Vcc never < 2.4V)
 	* Use of sleep modes
-	* SD card reader can be disconnected via an NPN transistor (150 mA Ic capable) at VCC when not used
-* SD logging is not necessary when no SD card is inserted. Can be disabled then.
+	* SD card reader can be disconnected via the ENABLE pin on the onboard voltage rectifier when no SD card inserted
 * Screen refresh every 100 ms can be hard to read
     * A switch to choose between 100ms and 300ms refresh rate
 	* A button to hold a value
-* Power measurment is done by dividing by 100 ms, which is not accurate
-    * Must divide by the time elapsed since last cycle

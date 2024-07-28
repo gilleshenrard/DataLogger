@@ -14,8 +14,21 @@ somewhere.
 
 It can have a display, a storage space, anything useful to treat data.
 
+## 2. Prerequisites to install
+###	a. Libraries
+* Adafruit INA219 by Adafruit (with dependencies)
+* SSD1306Ascii by Bill Greiman
+* SdFat by Bill Greiman
+###	b. Boards
+Arduino AVR Boards by Arduino
 
-## 2. Improvements
+
+## 3. Tools selection (for upload)
+* Board: "Arduino Pro or Pro Mini"
+* Processor: "ATmega328P (3.3V, 8MHz)"
+
+
+## 4. Improvements
 ###	a. Display
 * Used SSD1306AsciiAvrI2c.h instead of Adafruit_SSD1306.h (more optimised)
 * Got rid of SPI.h (less clogging)
@@ -35,7 +48,7 @@ It can have a display, a storage space, anything useful to treat data.
 * Fixed a power consumption calculation mistake (t = elapsed[ms] / (3600[s/h] * 1000[ms/s]))
 
 
-## 3. To Improve
+## 5. To Improve
 * Sometimes (34 times over 26500 cycles), SD logging can take up to 100ms alone.
     * Use of a circular buffer to write 64 bytes blocks at a time
 	* Use of a binary file instead of a text file

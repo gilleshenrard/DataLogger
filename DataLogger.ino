@@ -1,36 +1,44 @@
+/**
+ * @file DataLogger.ino
+ * @brief Implement the INA219-based datalogger, with an SSD1306 OLED display and MicroSD card logging
+ * @author Gilles Henrard
+ * @date 28/07/2024
+ *
+ * @note Datasheets :
+ *   - SSD1306 : https://cdn-shop.adafruit.com/datasheets/SSD1306.pdf
+ *   - INA219 https://www.ti.com/lit/gpn/ina219
+ */
 #include <Adafruit_INA219.h>
 #include <SSD1306AsciiAvrI2c.h>
 #include <SdFat.h>
 
-//declare timer trigger flag and counter value
-volatile boolean triggered = false;
+//global variables
+volatile boolean triggered = false;   ///< Flag indicating whether a timer interrupt occurred
 
-//declare SSD1306 OLED display variables
-#define OLED_RESET 4
-SSD1306AsciiAvrI2c display;
+//SSD1306 OLED display variables
+#define OLED_RESET 4          ///< GPIO pin used to reset the screen
+SSD1306AsciiAvrI2c display;   ///< Display control instance
 
-//declare INA219 variables
-Adafruit_INA219 ina219;
-float current_mA = 0.0, oldcurr = 0.0;
-float loadvoltage = 0.0, oldvolt = 0.0;
-float power_mW = 0.0, oldpow = 0.0;
-float energy_mWh = 0.0, oldegy = 0.0;
-unsigned long elapsed = 0;
+//INA219 variables
+Adafruit_INA219 ina219;                 ///< INA219 control instance
+float current_mA = 0.0, oldcurr = 0.0;  ///< Current (mA) buffers
+float loadvoltage = 0.0, oldvolt = 0.0; ///< Load voltage (V) buffers
+float power_mW = 0.0, oldpow = 0.0;     ///< Power (mW) buffers
+float energy_mWh = 0.0, oldegy = 0.0;   ///< Energy (mWh) buffers
+unsigned long elapsed = 0;              ///< Time elapsed since last measurements (ms)
 
 //declare microSD variables
 #define CHIPSELECT 10
 #define ENABLE_DEDICATED_SPI 1
 #define SD_CONFIG SdSpiConfig(SD_CS_PIN, DEDICATED_SPI, SPI_CLOCK)
 #define SPI_DRIVER_SELECT 0
-uint8_t cycles = 0;
-SdFat32 sd;
-File32 measurFile;
+uint8_t cycles = 0;                     ///< Number of cycles since last MicroSD card buffer flush
+SdFat32 sd;                             ///< MicroSD card control instance
+File32 measurFile;                      ///< File instance to which data will be flushed
 
-/******************************************************************************/
-/*  I : /                                                                     */
-/*  P : setup procedure                                                       */
-/*  O : /                                                                     */
-/******************************************************************************/
+/**
+ * @brief Setup the hardware
+ */
 void setup() {
   // Disable ADC
   ADCSRA = 0;
@@ -76,11 +84,9 @@ void setup() {
   sei();
 }
 
-/******************************************************************************/
-/*  I : /                                                                     */
-/*  P : main program loop                                                     */
-/*  O : /                                                                     */
-/******************************************************************************/
+/**
+ * @brief Main program loop
+ */
 void loop() {
   //if timer has been reached
   if (triggered)
@@ -124,23 +130,23 @@ void loop() {
   }
 }
 
-/****************************************************************************/
-/*  I : timer1 comparator vector                                            */
-/*  P : set the flag indicating timer has been reached + increment time var.*/
-/*  O : /                                                                   */
-/****************************************************************************/
+/**
+ * @brief Process a Timer1 interrupt
+ * @details Set the flag indicating timer has been reached
+ *
+ * @param TIMER1_COMPA_vect timer1 comparator vector
+ */
 ISR(TIMER1_COMPA_vect){
   triggered = true;
 }
 
-/****************************************************************************/
-/*  I : Value measured to display                                           */
-/*		Buffer holding the last saved measurment							*/
-/*		Line number at which display the value								*/
-/*		End of line (unit) to append to the line							*/
-/*  P : Format and display a measurment at the right line, only if changed	*/
-/*  O : /                                                                   */
-/****************************************************************************/
+/**
+ * @brief Format and display a measurment at the right line
+ *
+ * @param measurment Value measured to display
+ * @param line_num Line number at which display the value
+ * @param line_end End of line (unit) to append to the line
+ */
 void displayline(const float measurment, const uint8_t line_num, const char line_end[]) {
   char floatbuf[16]={0};
   
@@ -153,11 +159,10 @@ void displayline(const float measurment, const uint8_t line_num, const char line
   display.print(floatbuf);
 }
 
-/******************************************************************************/
-/*  I : /                                                                     */
-/*  P : get the values from the INA219 via I²C (takes 11ms)                   */
-/*  O : /                                                                     */
-/******************************************************************************/
+/**
+ * @brief Request measurement values to the INA219 via I²C
+ * @note This takes 11ms overall
+ */
 void ina219values() {
   float shuntvoltage = 0.0;
   float busvoltage = 0.0;
@@ -184,11 +189,9 @@ void ina219values() {
   energy_mWh += power_mW * ( elapsed / 3600000.0);
 }
 
-/******************************************************************************/
-/*  I : /                                                                     */
-/*  P : Append the measurments in a CSV file                                  */
-/*  O : /                                                                     */
-/******************************************************************************/
+/**
+ * @brief Append the measurments in a CSV file
+ */
 void writeFile() {
     char buf[32], voltbuf[16]={0}, curbuf[16]={0};
 

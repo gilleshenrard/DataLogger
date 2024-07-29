@@ -14,7 +14,7 @@
 #include <SdFat.h>
 
 // global variables
-volatile boolean triggered = false; ///< Flag indicating whether a timer interrupt occurred
+volatile boolean timerOccurred = false; ///< Flag indicating whether a timer interrupt occurred
 
 // SSD1306 OLED display variables
 #define OLED_RESET 4        ///< GPIO pin used to reset the screen
@@ -92,8 +92,11 @@ void setup()
 void loop()
 {
     // if timer has been reached
-    if (triggered)
+    if (timerOccurred)
     {
+        // reset the flag
+        timerOccurred = false;
+
         // get the values measured by the INA219
         ina219values();
 
@@ -132,9 +135,6 @@ void loop()
             displayline(energy_mWh, 6, " mWh");
             oldegy = energy_mWh;
         }
-
-        // reset the flag
-        triggered = false;
     }
 }
 
@@ -146,7 +146,7 @@ void loop()
  */
 ISR(TIMER1_COMPA_vect)
 {
-    triggered = true;
+    timerOccurred = true;
 }
 
 /**

@@ -21,12 +21,12 @@ volatile boolean timerOccurred = false; ///< Flag indicating whether a timer int
 SSD1306AsciiAvrI2c display; ///< Display control instance
 
 // INA219 variables
-Adafruit_INA219 ina219;       ///< INA219 control instance
-float current_mA = 0.0F;      ///< Latest Current measurement (mA)
-float loadvoltage_V = 0.0F;   ///< Latest Load voltage measurement (V)
-float power_mW = 0.0F;        ///< Latest Power measurement (mW)
-float energy_mWh = 0.0F;      ///< Latest Energy measurement (mWh)
-unsigned long elapsed_ms = 0; ///< Time elapsed since boot (ms)
+Adafruit_INA219 ina219;        ///< INA219 control instance
+float current_mA = 0.0F;       ///< Latest Current measurement (mA)
+float loadvoltage_V = 0.0F;    ///< Latest Load voltage measurement (V)
+float power_mW = 0.0F;         ///< Latest Power measurement (mW)
+float energy_mWh = 0.0F;       ///< Latest Energy measurement (mWh)
+unsigned long msSinceBoot = 0; ///< Time elapsed since boot (ms)
 
 // declare microSD variables
 #define CHIPSELECT 10
@@ -190,7 +190,7 @@ void ina219values()
     shuntvoltage_mV = ina219.getShuntVoltage_mV();
     busvoltage_V = ina219.getBusVoltage_V();
     current_mA = ina219.getCurrent_mA();
-    elapsed_ms = millis();
+    msSinceBoot = millis();
 
     // turn the INA219 off
     ina219.powerSave(true);
@@ -202,7 +202,7 @@ void ina219values()
     power_mW = loadvoltage_V * current_mA;
 
     // compute the energy consumed (t[h] = elapsed[ms] / 3600[s/h] * 1000[ms/s])
-    energy_mWh += power_mW * (elapsed_ms / 3600000.0F);
+    energy_mWh += power_mW * (msSinceBoot / 3600000.0F);
 }
 
 /**
@@ -218,7 +218,7 @@ void writeFile()
     dtostrf(current_mA, 10, 3, curbuf);
 
     // format a csv line : time,voltage,current\n
-    sprintf(buf, "%ld,%s,%s\n", elapsed_ms, voltbuf, curbuf);
+    sprintf(buf, "%ld,%s,%s\n", msSinceBoot, voltbuf, curbuf);
 
     // write the line in the file
     outputFile.write(buf);

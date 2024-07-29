@@ -21,20 +21,20 @@ volatile boolean timerOccurred = false; ///< Flag indicating whether a timer int
 SSD1306AsciiAvrI2c display; ///< Display control instance
 
 // INA219 variables
-Adafruit_INA219 ina219;                 ///< INA219 control instance
-float current_mA = 0.0, oldcurr = 0.0;  ///< Current (mA) buffers
-float loadvoltage = 0.0, oldvolt = 0.0; ///< Load voltage (V) buffers
-float power_mW = 0.0, oldpow = 0.0;     ///< Power (mW) buffers
-float energy_mWh = 0.0, oldegy = 0.0;   ///< Energy (mWh) buffers
-unsigned long elapsed = 0;              ///< Time elapsed since last measurements (ms)
+Adafruit_INA219 ina219;       ///< INA219 control instance
+float current_mA = 0.0;       ///< Latest Current measurement (mA)
+float loadvoltage = 0.0;      ///< Latest Load voltage measurement (V)
+float power_mW = 0.0;         ///< Latest Power measurement (mW)
+float energy_mWh = 0.0;       ///< Latest Energy measurement (mWh)
+unsigned long elapsed_ms = 0; ///< Time elapsed since boot (ms)
 
 // declare microSD variables
 #define CHIPSELECT 10
 #define ENABLE_DEDICATED_SPI 1
 #define SD_CONFIG SdSpiConfig(SD_CS_PIN, DEDICATED_SPI, SPI_CLOCK)
 #define SPI_DRIVER_SELECT 0
-SdFat32 sd;         ///< MicroSD card control instance
-File32 measurFile;  ///< File instance to which data will be flushed
+SdFat32 sd;        ///< MicroSD card control instance
+File32 measurFile; ///< File instance to which data will be flushed
 
 /**
  * @brief Setup the hardware
@@ -90,6 +90,11 @@ void setup()
  */
 void loop()
 {
+    static float oldcurr = 0.0; ///< previous current measurement buffer (retains its value at each function pass)
+    static float oldvolt = 0.0; ///< previous voltage measurement buffer (retains its value at each function pass)
+    static float oldpow = 0.0;  ///< previous power measurement buffer (retains its value at each function pass)
+    static float oldegy = 0.0;  ///< previous energy measurement buffer (retains its value at each function pass)
+
     // if timer has been reached
     if (timerOccurred)
     {
@@ -185,7 +190,7 @@ void ina219values()
     shuntvoltage = ina219.getShuntVoltage_mV();
     busvoltage = ina219.getBusVoltage_V();
     current_mA = ina219.getCurrent_mA();
-    elapsed = millis();
+    elapsed_ms = millis();
 
     // turn the INA219 off
     ina219.powerSave(true);
@@ -197,7 +202,7 @@ void ina219values()
     power_mW = loadvoltage * current_mA;
 
     // compute the energy consumed (t = elapsed[ms] / 3600[s/h] * 1000[ms/s])
-    energy_mWh += power_mW * (elapsed / 3600000.0);
+    energy_mWh += power_mW * (elapsed_ms / 3600000.0);
 }
 
 /**
@@ -205,7 +210,8 @@ void ina219values()
  */
 void writeFile()
 {
-    static uint8_t cycles = 0; ///< Number of cycles since last MicroSD card buffer flush (retains its value at each function pass)
+    static uint8_t cycles =
+        0; ///< Number of cycles since last MicroSD card buffer flush (retains its value at each function pass)
     char buf[32], voltbuf[16] = {0}, curbuf[16] = {0};
 
     // prepare buffers with the voltage and current values in strings
@@ -213,7 +219,7 @@ void writeFile()
     dtostrf(current_mA, 10, 3, curbuf);
 
     // format a csv line : time,voltage,current\n
-    sprintf(buf, "%ld,%s,%s\n", elapsed, voltbuf, curbuf);
+    sprintf(buf, "%ld,%s,%s\n", elapsed_ms, voltbuf, curbuf);
 
     // write the line in the file
     measurFile.write(buf);

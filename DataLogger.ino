@@ -115,28 +115,28 @@ void loop()
         // update the voltage line on the SSD1306 display
         if (loadvoltage_V != previousVoltage)
         {
-            displayline(loadvoltage_V, 0, " V");
+            displayline(loadvoltage_V, 0, "V");
             previousVoltage = loadvoltage_V;
         }
 
         // update the current line on the SSD1306 display
         if (current_mA != previousCurrent)
         {
-            displayline(current_mA, 2, " mA");
+            displayline(current_mA, 2, "mA");
             previousCurrent = current_mA;
         }
 
         // update the power line on the SSD1306 display
         if (power_mW != previousPower)
         {
-            displayline(power_mW, 4, " mW");
+            displayline(power_mW, 4, "mW");
             previousPower = power_mW;
         }
 
         // update the energy line on the SSD1306 display
         if (energy_mWh != previousEnergy)
         {
-            displayline(energy_mWh, 6, " mWh");
+            displayline(energy_mWh, 6, "mWh");
             previousEnergy = energy_mWh;
         }
     }
@@ -160,17 +160,18 @@ ISR(TIMER1_COMPA_vect)
  * @param line_num Line number at which display the value
  * @param line_end End of line (unit) to append to the line
  */
-void displayline(const float measurment, const uint8_t line_num, const char line_end[])
+void displayline(const float value, const uint8_t screenLineNumber, const char unitString[])
 {
-    char floatbuf[16] = {0};
+    char LineToPrint[16] = {0};
 
     // format the line ([-]xxxxx.xxx [unit])
-    dtostrf(measurment, 10, 3, floatbuf);
-    strcat(floatbuf, line_end);
+    dtostrf(value, 10, 3, LineToPrint);
+    strcat(LineToPrint, " ");
+    strcat(LineToPrint, unitString);
 
     // place the cursor and write the line
-    display.setCursor(0, line_num);
-    display.print(floatbuf);
+    display.setCursor(0, screenLineNumber);
+    display.print(LineToPrint);
 }
 
 /**

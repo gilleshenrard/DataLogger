@@ -179,8 +179,11 @@ void displayline(const float measurment, const uint8_t line_num, const char line
  */
 void ina219values()
 {
+#define MS_PER_HOUR 3600000.0F ///< Number of milliseconds in an hour
+
     float shuntvoltage_mV = 0.0F;
     float busvoltage_V = 0.0F;
+    static unsigned long previousTime_ms = 0; // retains value at each pass
 
     // turn the INA219 on
     ina219.powerSave(false);
@@ -201,8 +204,12 @@ void ina219values()
     // compute the power consumed
     power_mW = loadvoltage_V * current_mA;
 
-    // compute the energy consumed (t[h] = elapsed[ms] / 3600[s/h] * 1000[ms/s])
-    energy_mWh += power_mW * (msSinceBoot / 3600000.0F);
+    // compute the energy consumed since last measurement(E[mWh] = P[mW] * dt[h])
+    // + add it to previously consumed
+    energy_mWh += ((power_mW * (float)(msSinceBoot - previousTime_ms)) / MS_PER_HOUR);
+
+    // update time at latest measurements
+    previousTime_ms = msSinceBoot;
 }
 
 /**

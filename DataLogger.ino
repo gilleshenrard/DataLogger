@@ -216,7 +216,7 @@ void ina219values()
  */
 void writeFile()
 {
-    static uint8_t cycles = 0; ///< Number of cycles since last MicroSD flush (retains its value at each function pass)
+    static uint8_t nbLinesWritten = 0; ///< Number of cycles since last MicroSD flush (retains value at each pass)
     char finalLine[32], voltageString[16] = {0}, currentString[16] = {0};
 
     // prepare buffers with the voltage and current values in strings
@@ -230,10 +230,12 @@ void writeFile()
     outputFile.write(finalLine);
 
     // after 9 cycles (1 sec.), apply SD buffer changes to file in SD
-    if (cycles >= 9)
+    if (nbLinesWritten >= 9)
+    {
         outputFile.sync();
+    }
 
     // increment cycles count + reset to 0 after 10 cycles
-    cycles++;
-    cycles %= 10;
+    nbLinesWritten++;
+    nbLinesWritten %= 10;
 }

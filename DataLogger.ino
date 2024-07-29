@@ -33,7 +33,6 @@ unsigned long elapsed = 0;              ///< Time elapsed since last measurement
 #define ENABLE_DEDICATED_SPI 1
 #define SD_CONFIG SdSpiConfig(SD_CS_PIN, DEDICATED_SPI, SPI_CLOCK)
 #define SPI_DRIVER_SELECT 0
-uint8_t cycles = 0; ///< Number of cycles since last MicroSD card buffer flush
 SdFat32 sd;         ///< MicroSD card control instance
 File32 measurFile;  ///< File instance to which data will be flushed
 
@@ -206,6 +205,7 @@ void ina219values()
  */
 void writeFile()
 {
+    static uint8_t cycles = 0; ///< Number of cycles since last MicroSD card buffer flush (retains its value at each function pass)
     char buf[32], voltbuf[16] = {0}, curbuf[16] = {0};
 
     // prepare buffers with the voltage and current values in strings

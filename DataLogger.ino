@@ -179,8 +179,7 @@ void displayline(const float measurment, const uint8_t line_num, const char line
  */
 void ina219values()
 {
-#define MS_PER_HOUR 3600000.0F ///< Number of milliseconds in an hour
-
+    const float MS_PER_HOUR PROGMEM = 3600000.0F; ///< Number of milliseconds in an hour
     float shuntvoltage_mV = 0.0F;
     float busvoltage_V = 0.0F;
     static unsigned long previousTime_ms = 0; // retains value at each pass

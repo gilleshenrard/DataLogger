@@ -160,7 +160,7 @@ ISR(TIMER1_COMPA_vect)
  * @param line_num Line number at which display the value
  * @param line_end End of line (unit) to append to the line
  */
-void displayline(const float value, const uint8_t screenLineNumber, const char unitString[])
+static void displayline(const float value, const uint8_t screenLineNumber, const char unitString[])
 {
     char LineToPrint[16] = {0};
 
@@ -178,7 +178,7 @@ void displayline(const float value, const uint8_t screenLineNumber, const char u
  * @brief Request measurement values to the INA219 via I²C
  * @note This takes 11ms overall
  */
-void ina219values()
+static void ina219values()
 {
     const float MS_PER_HOUR PROGMEM = 3600000.0F; ///< Number of milliseconds in an hour
     float shuntvoltage_mV = 0.0F;
@@ -215,7 +215,7 @@ void ina219values()
 /**
  * @brief Append the measurments in a CSV file
  */
-void writeFile()
+static void writeFile()
 {
     static uint8_t nbLinesWritten = 0; ///< Number of cycles since last MicroSD flush (retains value at each pass)
     char finalLine[32], voltageString[16] = {0}, currentString[16] = {0};

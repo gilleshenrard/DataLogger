@@ -207,6 +207,7 @@ static void ina219values()
 
     // compute the energy consumed since last measurement  (E[mWh] = P[mW] * dt[h])
     // + add it to previously consumed
+    // (multiplying first then dividing, to mitigate rounding issues as much as possible)
     energy_mWh += ((power_mW * (float)(msSinceBoot - previousTime_ms)) / MS_PER_HOUR);
 
     // update time at latest measurements

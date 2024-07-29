@@ -115,28 +115,28 @@ void loop()
         // update the voltage line on the SSD1306 display
         if (loadvoltage_V != previousVoltage)
         {
-            displayline(loadvoltage_V, 0, "V");
+            displayline(loadvoltage_V, 0, PSTR("V"));
             previousVoltage = loadvoltage_V;
         }
 
         // update the current line on the SSD1306 display
         if (current_mA != previousCurrent)
         {
-            displayline(current_mA, 2, "mA");
+            displayline(current_mA, 2, PSTR("mA"));
             previousCurrent = current_mA;
         }
 
         // update the power line on the SSD1306 display
         if (power_mW != previousPower)
         {
-            displayline(power_mW, 4, "mW");
+            displayline(power_mW, 4, PSTR("mW"));
             previousPower = power_mW;
         }
 
         // update the energy line on the SSD1306 display
         if (energy_mWh != previousEnergy)
         {
-            displayline(energy_mWh, 6, "mWh");
+            displayline(energy_mWh, 6, PSTR("mWh"));
             previousEnergy = energy_mWh;
         }
     }
@@ -166,8 +166,8 @@ void displayline(const float value, const uint8_t screenLineNumber, const char u
 
     // format the line ([-]xxxxx.xxx [unit])
     dtostrf(value, 10, 3, LineToPrint);
-    strcat(LineToPrint, " ");
-    strcat(LineToPrint, unitString);
+    strcat_P(LineToPrint, PSTR(" "));
+    strcat_P(LineToPrint, unitString);
 
     // place the cursor and write the line
     display.setCursor(0, screenLineNumber);

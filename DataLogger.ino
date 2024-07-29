@@ -217,17 +217,17 @@ void ina219values()
 void writeFile()
 {
     static uint8_t cycles = 0; ///< Number of cycles since last MicroSD flush (retains its value at each function pass)
-    char buf[32], voltbuf[16] = {0}, curbuf[16] = {0};
+    char finalLine[32], voltageString[16] = {0}, currentString[16] = {0};
 
     // prepare buffers with the voltage and current values in strings
-    dtostrf(loadvoltage_V, 10, 3, voltbuf);
-    dtostrf(current_mA, 10, 3, curbuf);
+    dtostrf(loadvoltage_V, 10, 3, voltageString);
+    dtostrf(current_mA, 10, 3, currentString);
 
     // format a csv line : time,voltage,current\n
-    sprintf(buf, "%ld,%s,%s\n", msSinceBoot, voltbuf, curbuf);
+    sprintf_P(finalLine, PSTR("%ld,%s,%s\n"), msSinceBoot, voltageString, currentString);
 
     // write the line in the file
-    outputFile.write(buf);
+    outputFile.write(finalLine);
 
     // after 9 cycles (1 sec.), apply SD buffer changes to file in SD
     if (cycles >= 9)

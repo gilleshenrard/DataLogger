@@ -22,10 +22,10 @@ SSD1306AsciiAvrI2c display; ///< Display control instance
 
 // INA219 variables
 Adafruit_INA219 ina219;       ///< INA219 control instance
-float current_mA = 0.0F;       ///< Latest Current measurement (mA)
-float loadvoltage = 0.0F;      ///< Latest Load voltage measurement (V)
-float power_mW = 0.0F;         ///< Latest Power measurement (mW)
-float energy_mWh = 0.0F;       ///< Latest Energy measurement (mWh)
+float current_mA = 0.0F;      ///< Latest Current measurement (mA)
+float loadvoltage_V = 0.0F;   ///< Latest Load voltage measurement (V)
+float power_mW = 0.0F;        ///< Latest Power measurement (mW)
+float energy_mWh = 0.0F;      ///< Latest Energy measurement (mWh)
 unsigned long elapsed_ms = 0; ///< Time elapsed since boot (ms)
 
 // declare microSD variables
@@ -90,10 +90,10 @@ void setup()
  */
 void loop()
 {
-    static float oldcurr = 0.0F; ///< previous current measurement buffer (retains its value at each function pass)
-    static float oldvolt = 0.0F; ///< previous voltage measurement buffer (retains its value at each function pass)
-    static float oldpow = 0.0F;  ///< previous power measurement buffer (retains its value at each function pass)
-    static float oldegy = 0.0F;  ///< previous energy measurement buffer (retains its value at each function pass)
+    static float previousCurrent = 0.0F; ///< previous current measurement buffer (retains value at each function pass)
+    static float previousVoltage = 0.0F; ///< previous voltage measurement buffer (retains value at each function pass)
+    static float previousPower = 0.0F;   ///< previous power measurement buffer (retains value at each function pass)
+    static float previousEnergy = 0.0F;  ///< previous energy measurement buffer (retains value at each function pass)
 
     // if timer has been reached
     if (timerOccurred)
@@ -113,31 +113,31 @@ void loop()
         //
 
         // update the voltage line on the SSD1306 display
-        if (loadvoltage != oldvolt)
+        if (loadvoltage_V != previousVoltage)
         {
-            displayline(loadvoltage, 0, " V");
-            oldvolt = loadvoltage;
+            displayline(loadvoltage_V, 0, " V");
+            previousVoltage = loadvoltage_V;
         }
 
         // update the current line on the SSD1306 display
-        if (current_mA != oldcurr)
+        if (current_mA != previousCurrent)
         {
             displayline(current_mA, 2, " mA");
-            oldcurr = current_mA;
+            previousCurrent = current_mA;
         }
 
         // update the power line on the SSD1306 display
-        if (power_mW != oldpow)
+        if (power_mW != previousPower)
         {
             displayline(power_mW, 4, " mW");
-            oldpow = power_mW;
+            previousPower = power_mW;
         }
 
         // update the energy line on the SSD1306 display
-        if (energy_mWh != oldegy)
+        if (energy_mWh != previousEnergy)
         {
             displayline(energy_mWh, 6, " mWh");
-            oldegy = energy_mWh;
+            previousEnergy = energy_mWh;
         }
     }
 }
@@ -179,16 +179,16 @@ void displayline(const float measurment, const uint8_t line_num, const char line
  */
 void ina219values()
 {
-    float shuntvoltage = 0.0F;
-    float busvoltage = 0.0F;
+    float shuntvoltage_mV = 0.0F;
+    float busvoltage_V = 0.0F;
 
     // turn the INA219 on
     ina219.powerSave(false);
 
     // get the shunt voltage, bus voltage, current and power consumed from the
     // INA219
-    shuntvoltage = ina219.getShuntVoltage_mV();
-    busvoltage = ina219.getBusVoltage_V();
+    shuntvoltage_mV = ina219.getShuntVoltage_mV();
+    busvoltage_V = ina219.getBusVoltage_V();
     current_mA = ina219.getCurrent_mA();
     elapsed_ms = millis();
 
@@ -196,12 +196,12 @@ void ina219values()
     ina219.powerSave(true);
 
     // compute the load voltage
-    loadvoltage = busvoltage + (shuntvoltage / 1000.0F);
+    loadvoltage_V = busvoltage_V + (shuntvoltage_mV / 1000.0F);
 
     // compute the power consumed
-    power_mW = loadvoltage * current_mA;
+    power_mW = loadvoltage_V * current_mA;
 
-    // compute the energy consumed (t = elapsed[ms] / 3600[s/h] * 1000[ms/s])
+    // compute the energy consumed (t[h] = elapsed[ms] / 3600[s/h] * 1000[ms/s])
     energy_mWh += power_mW * (elapsed_ms / 3600000.0F);
 }
 
@@ -210,12 +210,11 @@ void ina219values()
  */
 void writeFile()
 {
-    static uint8_t cycles =
-        0; ///< Number of cycles since last MicroSD card buffer flush (retains its value at each function pass)
+    static uint8_t cycles = 0; ///< Number of cycles since last MicroSD flush (retains its value at each function pass)
     char buf[32], voltbuf[16] = {0}, curbuf[16] = {0};
 
     // prepare buffers with the voltage and current values in strings
-    dtostrf(loadvoltage, 10, 3, voltbuf);
+    dtostrf(loadvoltage_V, 10, 3, voltbuf);
     dtostrf(current_mA, 10, 3, curbuf);
 
     // format a csv line : time,voltage,current\n

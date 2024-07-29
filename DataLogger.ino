@@ -13,6 +13,8 @@
 #include <SSD1306AsciiAvrI2c.h>
 #include <SdFat.h>
 
+#define MS_PER_HOUR 3600000.0F  ///< Number of milliseconds in an hour
+
 // global variables
 volatile boolean timerOccurred = false; ///< Flag indicating whether a timer interrupt occurred
 
@@ -180,7 +182,6 @@ static void displayline(const float value, const uint8_t screenLineNumber, const
  */
 static void ina219values()
 {
-    const float MS_PER_HOUR PROGMEM = 3600000.0F; ///< Number of milliseconds in an hour
     float shuntvoltage_mV = 0.0F;
     float busvoltage_V = 0.0F;
     static unsigned long previousTime_ms = 0; // retains value at each pass

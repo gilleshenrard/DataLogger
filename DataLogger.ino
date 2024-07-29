@@ -34,7 +34,7 @@ unsigned long elapsed_ms = 0; ///< Time elapsed since boot (ms)
 #define SD_CONFIG SdSpiConfig(SD_CS_PIN, DEDICATED_SPI, SPI_CLOCK)
 #define SPI_DRIVER_SELECT 0
 SdFat32 sd;        ///< MicroSD card control instance
-File32 measurFile; ///< File instance to which data will be flushed
+File32 outputFile; ///< File instance to which data will be flushed
 
 /**
  * @brief Setup the hardware
@@ -50,9 +50,9 @@ void setup()
 
     // setup the SDcard reader
     sd.begin(CHIPSELECT);
-    measurFile.open("MEAS.csv", O_WRITE | O_CREAT | O_TRUNC);
-    measurFile.print("Time,Voltage,Current\n");
-    measurFile.sync();
+    outputFile.open("MEAS.csv", O_WRITE | O_CREAT | O_TRUNC);
+    outputFile.print("Time,Voltage,Current\n");
+    outputFile.sync();
 
     // setup the display
     display.begin(&Adafruit128x64, 0x3C, OLED_RESET);
@@ -222,11 +222,11 @@ void writeFile()
     sprintf(buf, "%ld,%s,%s\n", elapsed_ms, voltbuf, curbuf);
 
     // write the line in the file
-    measurFile.write(buf);
+    outputFile.write(buf);
 
     // after 9 cycles (1 sec.), apply SD buffer changes to file in SD
     if (cycles >= 9)
-        measurFile.sync();
+        outputFile.sync();
 
     // increment cycles count + reset to 0 after 10 cycles
     cycles++;

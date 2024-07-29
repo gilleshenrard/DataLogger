@@ -3,7 +3,7 @@
  * @brief Implement the INA219-based datalogger, with an SSD1306 OLED display
  * and MicroSD card logging
  * @author Gilles Henrard
- * @date 28/07/2024
+ * @date 29/07/2024
  *
  * @note Datasheets :
  *   - SSD1306 : https://cdn-shop.adafruit.com/datasheets/SSD1306.pdf
@@ -203,7 +203,7 @@ void ina219values()
     // compute the power consumed
     power_mW = loadvoltage_V * current_mA;
 
-    // compute the energy consumed since last measurement(E[mWh] = P[mW] * dt[h])
+    // compute the energy consumed since last measurement  (E[mWh] = P[mW] * dt[h])
     // + add it to previously consumed
     energy_mWh += ((power_mW * (float)(msSinceBoot - previousTime_ms)) / MS_PER_HOUR);
 

@@ -22,10 +22,10 @@ SSD1306AsciiAvrI2c display; ///< Display control instance
 
 // INA219 variables
 Adafruit_INA219 ina219;       ///< INA219 control instance
-float current_mA = 0.0;       ///< Latest Current measurement (mA)
-float loadvoltage = 0.0;      ///< Latest Load voltage measurement (V)
-float power_mW = 0.0;         ///< Latest Power measurement (mW)
-float energy_mWh = 0.0;       ///< Latest Energy measurement (mWh)
+float current_mA = 0.0F;       ///< Latest Current measurement (mA)
+float loadvoltage = 0.0F;      ///< Latest Load voltage measurement (V)
+float power_mW = 0.0F;         ///< Latest Power measurement (mW)
+float energy_mWh = 0.0F;       ///< Latest Energy measurement (mWh)
 unsigned long elapsed_ms = 0; ///< Time elapsed since boot (ms)
 
 // declare microSD variables
@@ -90,10 +90,10 @@ void setup()
  */
 void loop()
 {
-    static float oldcurr = 0.0; ///< previous current measurement buffer (retains its value at each function pass)
-    static float oldvolt = 0.0; ///< previous voltage measurement buffer (retains its value at each function pass)
-    static float oldpow = 0.0;  ///< previous power measurement buffer (retains its value at each function pass)
-    static float oldegy = 0.0;  ///< previous energy measurement buffer (retains its value at each function pass)
+    static float oldcurr = 0.0F; ///< previous current measurement buffer (retains its value at each function pass)
+    static float oldvolt = 0.0F; ///< previous voltage measurement buffer (retains its value at each function pass)
+    static float oldpow = 0.0F;  ///< previous power measurement buffer (retains its value at each function pass)
+    static float oldegy = 0.0F;  ///< previous energy measurement buffer (retains its value at each function pass)
 
     // if timer has been reached
     if (timerOccurred)
@@ -179,8 +179,8 @@ void displayline(const float measurment, const uint8_t line_num, const char line
  */
 void ina219values()
 {
-    float shuntvoltage = 0.0;
-    float busvoltage = 0.0;
+    float shuntvoltage = 0.0F;
+    float busvoltage = 0.0F;
 
     // turn the INA219 on
     ina219.powerSave(false);
@@ -196,13 +196,13 @@ void ina219values()
     ina219.powerSave(true);
 
     // compute the load voltage
-    loadvoltage = busvoltage + (shuntvoltage / 1000.0);
+    loadvoltage = busvoltage + (shuntvoltage / 1000.0F);
 
     // compute the power consumed
     power_mW = loadvoltage * current_mA;
 
     // compute the energy consumed (t = elapsed[ms] / 3600[s/h] * 1000[ms/s])
-    energy_mWh += power_mW * (elapsed_ms / 3600000.0);
+    energy_mWh += power_mW * (elapsed_ms / 3600000.0F);
 }
 
 /**
